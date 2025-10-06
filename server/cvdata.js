@@ -1,6 +1,7 @@
-import { CVData } from '../types/cv';
+// server/cvdata.js
 
-export const CV_DATA: CVData = {
+
+export const CV_DATA = {
   personalInfo: {
     fullName: "Zied Sayadi",
     professionalTitle: "Développeur Full-Stack web/mobile",
@@ -104,13 +105,5 @@ export const CV_DATA: CVData = {
   certifications: [
     { name: "Bootcamp Full-Stack-JS", issuer: "GoMyCode" },
     { name: "Création d'entreprise et formation d'entrepreneurs (CEFE)", issuer: "CEFE" }
-  ],
-    sectionTitles: {
-    profile: "Profil Professionnel",
-    technologies: "Environnements Techniques",
-    experiences: "Expériences Professionnelles",
-    certifications: "Certifications",
-    languages: "Langues"
-  }
-  
+  ]
 };

@@ -74,7 +74,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           <section>
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <FileText size={22} />
-              Profil Professionnel
+              {data.sectionTitles.profile}
             </h3>
             <div className="profile-content bg-gray-50 border-l-4 border-gray-800 pl-6 py-4 rounded-r-lg">
               <p className="text-gray-700 leading-relaxed text-justify">
@@ -83,16 +83,24 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             </div>
           </section>
 
+          {/* Technologies Section */}
+
           <section>
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <Code size={22} />
-              Environnements Techniques
+              {data.sectionTitles.technologies}
             </h3>
-            <div className="tech-list space-y-2">
-              {data.technologies.map((tech, index) => (
-                <div key={index} className="tech-item flex items-start gap-3">
-                  <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-gray-700 leading-relaxed">{tech}</p>
+            <div className="tech-categories space-y-6">
+              {Object.entries(data.technologies).map(([category, techs]) => (
+                <div key={category} className="tech-category">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-3 border-l-4 border-gray-800 pl-3">
+                    {category}
+                  </h4>
+                  <div className="tech-items">
+                    <p className="text-gray-700 leading-relaxed">
+                      {techs.join(', ')}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -102,7 +110,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           <section className="print:break-before-page">
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <Briefcase size={22} />
-              Expériences Professionnelles
+              {data.sectionTitles.experiences}
             </h3>
             <div className="space-y-6">
               {data.experiences.map((experience) => (
@@ -142,7 +150,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           <section>
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <Award size={22} />
-              Certifications
+              {data.sectionTitles.certifications}
             </h3>
             <div className="space-y-3">
               {data.certifications.map((cert, index) => (
@@ -161,7 +169,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             <section>
               <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
                 <Languages size={22} />
-                Langues
+                {data.sectionTitles.languages}
               </h3>
               <div className="space-y-3">
                 {data.languages.map((language, index) => (

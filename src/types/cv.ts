@@ -24,6 +24,14 @@ export interface Certification {
   issuer: string;
 }
 
+  export interface SectionTitles {
+    profile: string;
+    technologies: string;
+    experiences: string;
+    certifications: string;
+    languages: string;
+  };
+
 export interface CVData {
   personalInfo: {
     fullName: string;
@@ -33,8 +41,11 @@ export interface CVData {
   profile: string;
   contact: ContactInfo;
   skills: string[];
-  technologies: string[];
+  technologies: {
+    [category: string]: string[];
+  };
   experiences: Experience[];
   languages: Language[];
   certifications: Certification[];
+  sectionTitles: SectionTitles
 }
