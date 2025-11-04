@@ -24,13 +24,19 @@ export interface Certification {
   issuer: string;
 }
 
-  export interface SectionTitles {
-    profile: string;
-    technologies: string;
-    experiences: string;
-    certifications: string;
-    languages: string;
-  };
+export interface SectionTitles {
+  profile: string;
+  technologies: string;
+  experiences: string;
+  certifications: string;
+  languages: string;
+}
+
+// Updated technologies structure
+export interface TechnologyCategory {
+  title: string;
+  items: string; // Store items as a single comma-separated string
+}
 
 export interface CVData {
   personalInfo: {
@@ -41,11 +47,9 @@ export interface CVData {
   profile: string;
   contact: ContactInfo;
   skills: string[];
-  technologies: {
-    [category: string]: string[];
-  };
+  technologies: TechnologyCategory[]; // Use the new structure
   experiences: Experience[];
   languages: Language[];
   certifications: Certification[];
-  sectionTitles: SectionTitles
+  sectionTitles: SectionTitles;
 }

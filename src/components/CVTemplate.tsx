@@ -14,7 +14,7 @@ interface CVTemplateProps {
 const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   const componentRef = useRef<HTMLDivElement>(null);
   const [cvData, setCvData] = useState<CVData>(data);
-  const [lang, setLang] = useState<string>('English');
+  const [lang, setLang] = useState<string>('Français');
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
@@ -30,8 +30,8 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   // ✅ Auto-translate when language changes
   useEffect(() => {
     const handleTranslate = async () => {
-      // Skip translation on initial mount (English is default)
-      if (lang === 'English') {
+      // Skip translation on initial mount (Français is default)
+      if (lang === 'Français') {
         setCvData(data);
         return;
       }
@@ -86,7 +86,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   });
 
   const handleReset = () => {
-    setLang('English');
+    setLang('Français');
     setCvData(data);
   };
 
@@ -126,8 +126,8 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
               backgroundPosition: 'right 0.75rem center',
             }}
           >
-            <option value="English">English</option>
             <option value="French">Français</option>
+            <option value="English">English</option>
             <option value="Arabic">العربية</option>
             <option value="German">Deutsch</option>
             <option value="Spanish">Español</option>
