@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
   Mail, 
   Phone, 
@@ -12,14 +12,22 @@ import {
   User,
   FileText
 } from 'lucide-react';
-import type { CVData } from '../types/cv';
+import type { CVData, TechnologyCategory } from '../types/cv'; // Import TechnologyCategory
 
 interface PrintableCVContentProps {
   data: CVData;
+  activeSection?: string;
 }
 
 const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentProps>(
-  ({ data }, ref) => {
+  ({ data, activeSection }, ref) => {
+
+    useEffect(() => {
+      if (!activeSection) return;
+      const el = document.getElementById("preview-" + activeSection);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, [activeSection]);
+
     return (
       <div 
         ref={ref}
@@ -31,13 +39,18 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         
         {/* Header Section */}
         <header className="header text-center mb-8">
-          <div className="mb-6">
-            <img
-              src={data.personalInfo.avatarUrl}
-              alt={`${data.personalInfo.fullName} - Photo de profil`}
-              className="avatar w-32 h-32 rounded-full mx-auto border-4 border-gray-800 shadow-lg object-cover"
-            />
-          </div>
+          {
+            data.personalInfo.avatarUrl && (
+                <div className="mb-6">
+                  <img
+                    src={data.personalInfo.avatarUrl}
+                    alt={`${data.personalInfo.fullName} - Photo de profil`}
+                    className="avatar w-32 h-32 rounded-full mx-auto border-2 border-gray-400 shadow-lg object-cover"
+                  />
+               </div>
+            )
+          }
+        
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             {data.personalInfo.fullName}
           </h1>
@@ -71,10 +84,10 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
 
         <div className="space-y-8">
           {/* Professional Profile Section */}
-          <section>
+          <section id="preview-profile">
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <FileText size={22} />
-              Profil Professionnel
+              {data.sectionTitles.profile}
             </h3>
             <div className="profile-content bg-gray-50 border-l-4 border-gray-800 pl-6 py-4 rounded-r-lg">
               <p className="text-gray-700 leading-relaxed text-justify">
@@ -83,26 +96,40 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             </div>
           </section>
 
-          <section>
+          {/* Technologies Section */}
+          <section id="preview-technologies">
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <Code size={22} />
-              Environnements Techniques
+              {data.sectionTitles.technologies}
             </h3>
-            <div className="tech-list space-y-2">
-              {data.technologies.map((tech, index) => (
-                <div key={index} className="tech-item flex items-start gap-3">
-                  <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
-                  <p className="text-gray-700 leading-relaxed">{tech}</p>
+            <div className="tech-categories space-y-6">
+              {/* Check if data.technologies is an array before mapping */}
+              {Array.isArray(data.technologies) && data.technologies.map((techCategory, index) => (
+                <div key={index} className="tech-category">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-3 border-l-4 border-gray-800 pl-3">
+                    {techCategory.title}
+                  </h4>
+                  <div className="tech-items">
+                    {/* Display items as a list, splitting by comma */}
+                    <p className="text-gray-700 leading-relaxed">
+                      {techCategory.items.split(',').map((item, itemIndex) => (
+                        <React.Fragment key={itemIndex}>
+                          {item.trim()}
+                          {itemIndex < techCategory.items.split(',').length - 1 && ', '}
+                        </React.Fragment>
+                      ))}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </section>
 
           {/* Professional Experience Section */}
-          <section className="print:break-before-page">
+          <section id="preview-experiences" className="print:break-before-page">
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <Briefcase size={22} />
-              Expériences Professionnelles
+              {data.sectionTitles.experiences}
             </h3>
             <div className="space-y-6">
               {data.experiences.map((experience) => (
@@ -139,10 +166,10 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             </div>
           </section>
 
-          <section>
+          <section id="preview-certifications">
             <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
               <Award size={22} />
-              Certifications
+              {data.sectionTitles.certifications}
             </h3>
             <div className="space-y-3">
               {data.certifications.map((cert, index) => (
@@ -158,10 +185,10 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           </section>
 
             {/* Languages and Certifications Section */}
-            <section>
+            <section id="preview-languages">
               <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
                 <Languages size={22} />
-                Langues
+                {data.sectionTitles.languages}
               </h3>
               <div className="space-y-3">
                 {data.languages.map((language, index) => (
