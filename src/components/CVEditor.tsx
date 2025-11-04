@@ -1,8 +1,8 @@
-// ... other imports
-import { Save, RotateCcw, Eye, Edit, Plus, Trash2 } from "lucide-react";
-import type { CVData, TechnologyCategory, Experience } from "../types/cv"; // Import TechnologyCategory and Experience
+import { Save, RotateCcw, Eye, Edit, Plus, Trash2, Layers } from "lucide-react";
+import type { CVData, TechnologyCategory, Experience, CustomSection } from "../types/cv";
 import PrintableCVContent from "./PrintableCVContent";
-import { useState, useEffect } from 'react'; // Import useEffect
+import { useState, useEffect } from 'react';
+import { createCustomSection } from '../utils/cvHelpers';
 
 export interface CVEditorProps {
   data: CVData;
@@ -180,6 +180,61 @@ const CVEditor: React.FC<CVEditorProps> = ({
     onUpdate(newData);
   };
 
+  // --- Custom Section Handlers ---
+  const addCustomSection = () => {
+    const newSection = createCustomSection("Nouvelle Section", "");
+    const newData = { ...data };
+    newData.customSections.push(newSection);
+    newData.sectionOrder.push(newSection.id);
+    onUpdate(newData);
+    setActiveSection(newSection.id);
+  };
+
+  const removeCustomSection = (id: string) => {
+    const newData = { ...data };
+    newData.customSections = newData.customSections.filter(s => s.id !== id);
+    newData.sectionOrder = newData.sectionOrder.filter(sid => sid !== id);
+    onUpdate(newData);
+    if (activeSection === id) {
+      setActiveSection("personal");
+    }
+  };
+
+  const updateCustomSectionTitle = (id: string, title: string) => {
+    const newData = { ...data };
+    const section = newData.customSections.find(s => s.id === id);
+    if (section) section.title = title;
+    onUpdate(newData);
+  };
+
+  const updateCustomSectionSubtitle = (id: string, subtitle: string) => {
+    const newData = { ...data };
+    const section = newData.customSections.find(s => s.id === id);
+    if (section) section.subtitle = subtitle;
+    onUpdate(newData);
+  };
+
+  const addCustomSectionBlock = (id: string) => {
+    const newData = { ...data };
+    const section = newData.customSections.find(s => s.id === id);
+    if (section) section.blocks.push("");
+    onUpdate(newData);
+  };
+
+  const removeCustomSectionBlock = (id: string, blockIndex: number) => {
+    const newData = { ...data };
+    const section = newData.customSections.find(s => s.id === id);
+    if (section) section.blocks = section.blocks.filter((_, i) => i !== blockIndex);
+    onUpdate(newData);
+  };
+
+  const updateCustomSectionBlock = (id: string, blockIndex: number, value: string) => {
+    const newData = { ...data };
+    const section = newData.customSections.find(s => s.id === id);
+    if (section) section.blocks[blockIndex] = value;
+    onUpdate(newData);
+  };
+
   // --- Image Upload Handlers ---
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -225,6 +280,11 @@ const CVEditor: React.FC<CVEditorProps> = ({
     { id: "experiences", label: "Expériences", icon: "💼" },
     { id: "languages", label: "Langues", icon: "🌐" },
     { id: "certifications", label: "Certifications", icon: "🏆" },
+    ...data.customSections.map(section => ({
+      id: section.id,
+      label: section.title || "Section Personnalisée",
+      icon: "📑"
+    }))
   ];
 
   // ---------------------------------------
@@ -267,15 +327,15 @@ const CVEditor: React.FC<CVEditorProps> = ({
         </div>
       </div>
 
-      {/* MAIN SPLIT VIEW */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* MAIN SPLIT VIEW - Responsive: stacked on mobile (<lg), side-by-side on desktop (>=lg) */}
+      <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
 
         {/* LEFT SIDE — EDITOR */}
-        <div className="w-2/4 overflow-y-auto p-8 border-r border-gray-200">
+        <div className="w-full lg:w-2/4 overflow-y-auto p-4 lg:p-8 border-b lg:border-b-0 lg:border-r border-gray-200">
           <div className="w-full max-w-[650px] mx-auto space-y-6">
 
             <div className="flex flex-1 overflow-hidden">
-                <div className="bg-gray-50 border-r border-gray-200">
+                <div className="bg-gray-50 border-r border-gray-200 w-full">
                   <nav className="p-4 flex gap-2 overflow-x-auto whitespace-nowrap flex-wrap">
                     {sections.map((section) => (
                       <button
@@ -291,6 +351,13 @@ const CVEditor: React.FC<CVEditorProps> = ({
                         <span className="font-medium">{section.label}</span>
                       </button>
                     ))}
+                    <button
+                      onClick={addCustomSection}
+                      className="inline-flex items-center gap-2 min-w-[140px] text-left px-4 py-3 rounded-lg transition-colors border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-600 hover:text-blue-600"
+                    >
+                      <Plus size={18} />
+                      <span className="font-medium">Section Personnalisée</span>
+                    </button>
                   </nav>
                 </div>
             </div>
@@ -858,11 +925,92 @@ const CVEditor: React.FC<CVEditorProps> = ({
                 ))}
               </div>
             )}
+
+            {/* CUSTOM SECTIONS */}
+            {data.customSections.map((customSection) =>
+              activeSection === customSection.id && (
+                <div key={customSection.id} className="space-y-4">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-2xl font-bold text-gray-800">
+                      Section Personnalisée
+                    </h3>
+                    <button
+                      onClick={() => removeCustomSection(customSection.id)}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                    >
+                      <Trash2 size={18} />
+                      Supprimer Section
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Titre de la Section
+                    </label>
+                    <input
+                      type="text"
+                      value={customSection.title}
+                      onChange={(e) => updateCustomSectionTitle(customSection.id, e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Ex: Projets, Publications, Récompenses..."
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Sous-titre (optionnel)
+                    </label>
+                    <input
+                      type="text"
+                      value={customSection.subtitle || ""}
+                      onChange={(e) => updateCustomSectionSubtitle(customSection.id, e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Sous-titre optionnel"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-sm font-medium text-gray-700">
+                        Contenu
+                      </label>
+                      <button
+                        onClick={() => addCustomSectionBlock(customSection.id)}
+                        className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                      >
+                        <Plus size={14} />
+                        Bloc
+                      </button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {customSection.blocks.map((block, blockIndex) => (
+                        <div key={blockIndex} className="flex gap-2">
+                          <textarea
+                            value={block}
+                            onChange={(e) => updateCustomSectionBlock(customSection.id, blockIndex, e.target.value)}
+                            rows={3}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                            placeholder="Contenu du bloc"
+                          />
+                          <button
+                            onClick={() => removeCustomSectionBlock(customSection.id, blockIndex)}
+                            className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
+            )}
           </div>
         </div>
 
         {/* RIGHT SIDE — LIVE PREVIEW */}
-        <div className="w-2/4 overflow-y-auto p-4 bg-gray-50">
+        <div className="w-full lg:w-2/4 overflow-y-auto p-4 bg-gray-50">
           <PrintableCVContent data={data} activeSection={activeSection} />
         </div>
 

@@ -26,16 +26,24 @@ export interface Certification {
 
 export interface SectionTitles {
   profile: string;
+  skills: string;
   technologies: string;
   experiences: string;
   certifications: string;
   languages: string;
 }
 
-// Updated technologies structure
 export interface TechnologyCategory {
+  id: string;
   title: string;
-  items: string; // Store items as a single comma-separated string
+  items: string;
+}
+
+export interface CustomSection {
+  id: string;
+  title: string;
+  subtitle?: string;
+  blocks: string[];
 }
 
 export interface CVData {
@@ -47,9 +55,11 @@ export interface CVData {
   profile: string;
   contact: ContactInfo;
   skills: string[];
-  technologies: TechnologyCategory[]; // Use the new structure
+  technologies: TechnologyCategory[];
   experiences: Experience[];
   languages: Language[];
   certifications: Certification[];
+  customSections: CustomSection[];
+  sectionOrder: string[];
   sectionTitles: SectionTitles;
 }

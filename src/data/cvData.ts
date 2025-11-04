@@ -22,29 +22,34 @@ export const CV_DATA: CVData = {
     "Intégration et déploiement continue",
     "Optimisation du code avec les bonnes pratiques et les bonnes packages"
   ],
-  // Updated technologies structure
   technologies: [
     {
+      id: "tech-1",
       title: "Langages & Standards",
       items: "PHP 7, JavaScript, TypeScript, HTML, CSS, SASS, JSON, UML"
     },
     {
+      id: "tech-2",
       title: "Frameworks & Bibliothèques",
       items: "Symfony, Node.js, Express.js, React.js, Redux, React Native, PrestaShop, Drupal"
     },
     {
+      id: "tech-3",
       title: "Tests & Qualité",
       items: "PhpUnit"
     },
     {
+      id: "tech-4",
       title: "Bases de Données",
       items: "MySQL, MariaDB, SQL Server, MongoDB, Redis"
     },
     {
+      id: "tech-5",
       title: "DevOps & Hébergement",
       items: "Docker, Docker-Compose, OVH, CI/CD"
     },
     {
+      id: "tech-6",
       title: "Architecture & Protocoles",
       items: "MVC, REST, SOAP"
     }
@@ -112,12 +117,22 @@ export const CV_DATA: CVData = {
     { name: "Bootcamp Full-Stack-JS", issuer: "GoMyCode" },
     { name: "Création d'entreprise et formation d'entrepreneurs (CEFE)", issuer: "CEFE" }
   ],
+  customSections: [],
+  sectionOrder: [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
   sectionTitles: {
     profile: "Profil Professionnel",
+    skills: "Domaines de Compétences",
     technologies: "Environnements Techniques",
     experiences: "Expériences Professionnelles",
     certifications: "Certifications",
     languages: "Langues"
   }
-
 };
