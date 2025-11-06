@@ -1,0 +1,144 @@
+{
+  "personalInfo": {
+    "fullName": "Zied Sayadi",
+    "professionalTitle": "Full-Stack web/mobile Developer",
+    "avatarUrl": ""
+  },
+  "profile": "Web & Mobile developer with 4 years of experience in front-end and back-end development. Specialized in React, Node.js, Drupal and Symfony, I have contributed to the development of digital solutions for companies like Thales.",
+  "contact": {
+    "email": "zieed.sayadi@gmail.com",
+    "phone": "+216 21 837 489",
+    "location": "Tunis",
+    "github": "https://github.com/ziedsayadi1992",
+    "linkedin": "linkedin.com/in/zied-sayadi"
+  },
+  "skills": [
+    "Technical design",
+    "API, Back-End and Front-End development",
+    "Solving technical problems is functional",
+    "Integration of new packages",
+    "Continuous integration and deployment",
+    "Code optimization with good practices and good packages"
+  ],
+  "technologies": [
+    {
+      "id": "tech-1",
+      "title": "Langages & Standards",
+      "items": "PHP 7, JavaScript, TypeScript, HTML, CSS, SASS, JSON, UML"
+    },
+    {
+      "id": "tech-2",
+      "title": "Frameworks & Bibliothèques",
+      "items": "Symfony, Node.js, Express.js, React.js, Redux, React Native, PrestaShop, Drupal"
+    },
+    {
+      "id": "tech-4",
+      "title": "Bases de Données",
+      "items": "MySQL, MariaDB, SQL Server, MongoDB, Redis"
+    },
+    {
+      "id": "tech-6",
+      "title": "Architecture & Protocoles",
+      "items": "MVC, REST, SOAP"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "1",
+      "jobTitle": "Web & Mobile Developer",
+      "company": "Matuile Pro (Paris, France)",
+      "missions": [
+        "Stack : CodeIgniter (PHP), React Native (Redux), OneSignal, OVH/CDN",
+        "Design of data models (tiles, users, services) and application architecture.",
+        "Back-end development with CodeIgniter: REST API, management of bookings and accesses.",
+        "Mobile development in React Native (without Expo) with Redux for global state management.",
+        "Setting up messaging (emails, SMS, push notifications via OneSignal).",
+        "Deployment on OVH with performance optimization via CDN."
+      ]
+    },
+    {
+      "id": "2",
+      "jobTitle": "Symfony Developer",
+      "company": "Macarto des Risques (AMRAE & MEDEF 79 – France)",
+      "missions": [
+        "Stack : Symfony 5, Twig, EasyAdmin, DataTables, Leaflet.js",
+        "Development of risk mapping forms and generation of PDF reports (radar, analyses).",
+        "Multi-role user management (companies & administrators).",
+        "Customization of the EasyAdmin dashboard for monitoring mappings.",
+        "Integration of DataTables for sorting, searching and exporting data.",
+        "Adding visualizations (diagrams, geographic maps via Leaflet.js)."
+      ]
+    },
+    {
+      "id": "3",
+      "jobTitle": "Drupal Developer",
+      "company": "Cyber Solutions by Thales (CDS)",
+      "missions": [
+        "Stack : Drupal 10, MVC, Webform, JSON:API Views, LazyLoad, SEO modules",
+        "Creation and integration of the custom Drupal 10 theme with MVC architecture.",
+        "Integration of modules: Webform (advanced forms), SEO, Feeds, JSON:API Views, LazyLoad, AddToAny.",
+        "Development of custom modules adapted to specific needs.",
+        "Optimization of the portal: performance, caching, lazy loading, CDN.",
+        "Maintenance and corrections for an international cybersecurity showcase site."
+      ]
+    },
+    {
+      "id": "4",
+      "jobTitle": "Frontend Developer",
+      "company": "Kepler Travel (Paris, France)",
+      "missions": [
+        "Stack : React.js, TypeScript, Node.js",
+        "Frontend design with React & TypeScript (reusable components, advanced forms).",
+        "Integration of React Hook Form + Controller for reliable booking and quote management.",
+        "Development of custom hooks to centralize the fetch and reduce network calls.",
+        "Performance optimization with useMemo, useCallback and conditional rendering.",
+        "Setting up dynamic views (catalog, filters, travel details, online booking)."
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Français",
+      "flag": "",
+      "level": "Proficient (C1)"
+    },
+    {
+      "name": "Arabe",
+      "flag": "",
+      "level": "Native language"
+    },
+    {
+      "name": "Anglais",
+      "flag": "",
+      "level": "Proficient (C1)"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Bootcamp Full-Stack-JS",
+      "issuer": "GoMyCode"
+    },
+    {
+      "name": "Création d’entreprise et formation d’entrepreneurs (CEFE)",
+      "issuer": "CEFE"
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": "Profil Professionnel",
+    "skills": "Domaines de Compétences",
+    "technologies": "Environnements Techniques",
+    "experiences": "Expériences Professionnelles",
+    "certifications": "Certifications",
+    "languages": "Langues"
+  }
+}

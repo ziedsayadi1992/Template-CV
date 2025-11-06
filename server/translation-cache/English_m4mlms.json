@@ -1,0 +1,152 @@
+{
+  "personalInfo": {
+    "fullName": "inés mohamed",
+    "professionalTitle": "Front End Developer",
+    "avatarUrl": ""
+  },
+  "profile": "je suis actuellement développeuse Front-End chez CoccinetTunis et je suis à la recherche d'une nouvelles opportunité.",
+  "contact": {
+    "email": "inessmed@gmail.com",
+    "phone": "(+216)54518588",
+    "location": "Tunis",
+    "github": null,
+    "linkedin": null
+  },
+  "skills": [
+    "Dynamique",
+    "Esprit d'équipe",
+    "Polyvalente"
+  ],
+  "technologies": [
+    {
+      "id": "tech-1",
+      "title": "Front-End",
+      "items": "VueJS, React JS, Typescript, HTML5 , CSS3 & Jquery"
+    },
+    {
+      "id": "tech-2",
+      "title": "Back-End & Databases",
+      "items": "PHP & SQL"
+    },
+    {
+      "id": "tech-3",
+      "title": "CMS & Frameworks",
+      "items": "Wordpress, Drupal, CodeIgniter, Bootstrap, GIT, Symfony"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "exp-1",
+      "jobTitle": "Front End WordPress Developer",
+      "company": "Coccinet Tunis (Depuis avril 2024 (1 an))",
+      "missions": [
+        "Intégration et développement des divers site web avec WordPress (Html, CSS, Javascript, Figma, XD) (intégration From scratch, intégration  avec page Builders )"
+      ]
+    },
+    {
+      "id": "exp-2",
+      "jobTitle": "WordPress Developer/integrator",
+      "company": "Coccinet Tunis (D' août 2023 à avril 2024 (8 mois))",
+      "missions": [
+        "Intégration et Développement des thèmes WP sur-mesure (front/back)",
+        "Mise en place des animations avec JS natif.",
+        "Personnalisation du back-o  ice pour une prise en main facilitée pour le client.",
+        "Analyser le besoin du client en lisant les documents de spécification."
+      ]
+    },
+    {
+      "id": "exp-3",
+      "jobTitle": "Web developer",
+      "company": "Ouidev Tunis (De janvier 2023 à juillet 2023 (6 mois))",
+      "missions": [
+        "Intégration et Développement de sites web avec WordPress (Divi, Woocommerce..)",
+        "Prendre en charge les updates et l'optimisation du site   https://www.bracelet-chemin-de-vie.fr/"
+      ]
+    },
+    {
+      "id": "exp-4",
+      "jobTitle": "Front End WordPress Developer",
+      "company": "Aymax Tunis (De janvier 2021 à janvier 2023 (2 ans))",
+      "missions": [
+        "Intégration et Développement de sites web avec WordPress (Front/back)",
+        "Développement des sites web WordPress avec le page builder Elementor"
+      ]
+    },
+    {
+      "id": "exp-5",
+      "jobTitle": "WP Integrator/Developer",
+      "company": "CosaVostra Tunis (D' août 2020 à janvier 2021 (5 mois))",
+      "missions": [
+        "Transformer des maquettes graphiques en pages HTML/CSS/JS",
+        "Respecter les standards et les bonnes pratiques (accessibilité (A11Y), référencement naturel, performances…)",
+        "S ʼ assurer d ʼ un rendu optimal sur l ʼ ensemble des principaux navigateurs du marché",
+        "Appliquer les principes du RWD (intégration CSS fluide, mobile first…)",
+        "Travailler en étroite collaboration avec les équipes UX/UI, les devs back et les chefs de projets",
+        "Analyser et prendre en charge les fonctionnalités décrites dans le CDC",
+        "Accompagner aux choix des solutions techniques",
+        "Formation VueJS2 et 3 sur la platfomre Dyma.fr"
+      ]
+    },
+    {
+      "id": "exp-6",
+      "jobTitle": "WordPress Developer",
+      "company": "STA MEA Tunis (De juillet 2017 à juillet 2020 (3 ans))",
+      "missions": [
+        "Refonte des sites web avec WordPress, quelques références :  https://www.onvousforme.fr/  https://www.bretagne-securite-services.fr/  https://www.ageps.fr/"
+      ]
+    },
+    {
+      "id": "exp-7",
+      "jobTitle": "Web developer",
+      "company": "Capitol So  sfax (De mai 2016 à juin 2017 (1 an))",
+      "missions": [
+        "Développement et manipulation des sites web avec le framework CodeIgniter",
+        "Mise en place de CMS ( WordPress) et développement des sites web"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Français",
+      "flag": "",
+      "level": ""
+    },
+    {
+      "name": "Anglais",
+      "flag": "",
+      "level": ""
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Formation REACT JS",
+      "issuer": "Agence Coccinet"
+    },
+    {
+      "name": "Anglais de communication",
+      "issuer": "Centre CRIF"
+    },
+    {
+      "name": "Startup Weekend",
+      "issuer": "Sfax 3 sur le projet Plateforme e-commerce"
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": "je suis actuellement développeuse Front-End chez CoccinetTunis et je suis à la recherche d'une nouvelles opportunité.",
+    "skills": "COMPÉTENCES",
+    "technologies": "Environnement Technique",
+    "experiences": "EXPÉRIENCES PROFESSIONNELLES",
+    "certifications": "FORMATION ET ATTESTATION",
+    "languages": "LANGUES"
+  }
+}

@@ -1,8 +1,10 @@
-import { Save, RotateCcw, Eye, Edit, Plus, Trash2, Layers } from "lucide-react";
-import type { CVData, TechnologyCategory, Experience, CustomSection } from "../types/cv";
+// src/components/CVEditor.tsx
+import { Save, RotateCcw, Eye, Edit, Plus, Trash2 } from "lucide-react";
+import type { CVData, TechnologyCategory, Experience } from "../types/cv";
 import PrintableCVContent from "./PrintableCVContent";
 import { useState, useEffect } from 'react';
 import { createCustomSection } from '../utils/cvHelpers';
+import { useLanguage } from '../contexts/LanguageContext';
 
 export interface CVEditorProps {
   data: CVData;
@@ -23,6 +25,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 }) => {
   const [activeSection, setActiveSection] = useState<string>("personal");
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(data.personalInfo.avatarUrl || null);
+  const { t } = useLanguage();
 
   // Effect to update preview URL if data.personalInfo.avatarUrl changes
   useEffect(() => {
@@ -157,7 +160,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
   // --- Technologies Section Handlers ---
 
   const addTechnologyCategory = () => {
-    const newCategory: TechnologyCategory = { title: "", items: "" };
+    const newCategory: TechnologyCategory = { id: Date.now().toString(), title: "", items: "" };
     onUpdate({ ...data, technologies: [...data.technologies, newCategory] });
   };
 
@@ -182,7 +185,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
   // --- Custom Section Handlers ---
   const addCustomSection = () => {
-    const newSection = createCustomSection("Nouvelle Section", "");
+    const newSection = createCustomSection(t('customSection'), "");
     const newData = { ...data };
     newData.customSections.push(newSection);
     newData.sectionOrder.push(newSection.id);
@@ -242,7 +245,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
       // Check file size (5MB limit)
       const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
       if (file.size > maxSizeInBytes) {
-        alert("Le fichier dépasse la limite de 5 Mo.");
+        alert(t('maxFileSize'));
         event.target.value = ""; // Clear the input
         return;
       }
@@ -272,17 +275,17 @@ const CVEditor: React.FC<CVEditorProps> = ({
   // ---------------------------------------
 
   const sections = [
-    { id: "personal", label: "Informations Personnelles", icon: "👤" },
-    { id: "profile", label: "Profil Professionnel", icon: "📝" },
-    { id: "contact", label: "Contact", icon: "📧" },
-    { id: "skills", label: "Compétences", icon: "⚡" },
-    { id: "technologies", label: "Technologies", icon: "💻" },
-    { id: "experiences", label: "Expériences", icon: "💼" },
-    { id: "languages", label: "Langues", icon: "🌐" },
-    { id: "certifications", label: "Certifications", icon: "🏆" },
+    { id: "personal", label: t('personalInfo'), icon: "👤" },
+    { id: "profile", label: t('profile'), icon: "📝" },
+    { id: "contact", label: t('contact'), icon: "📧" },
+    { id: "skills", label: t('skills'), icon: "⚡" },
+    { id: "technologies", label: t('technologies'), icon: "💻" },
+    { id: "experiences", label: t('experiences'), icon: "💼" },
+    { id: "languages", label: t('languages'), icon: "🌐" },
+    { id: "certifications", label: t('certifications'), icon: "🏆" },
     ...data.customSections.map(section => ({
       id: section.id,
-      label: section.title || "Section Personnalisée",
+      label: section.title || t('customSection'),
       icon: "📑"
     }))
   ];
@@ -297,7 +300,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
       <div className="bg-gray-800 text-white p-4 flex justify-between items-center shadow-lg">
         <div className="flex items-center gap-3">
           <Edit size={24} />
-          <h2 className="text-xl font-bold">Éditeur de CV</h2>
+          <h2 className="text-xl font-bold">{t('editor')}</h2>
         </div>
 
         <div className="flex gap-2">
@@ -306,7 +309,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
           >
             {isPreviewMode ? <Edit size={18} /> : <Eye size={18} />}
-            {isPreviewMode ? "Éditer" : "Aperçu"}
+            {isPreviewMode ? t('edit') : t('preview')}
           </button>
 
           <button
@@ -314,7 +317,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
             className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors"
           >
             <RotateCcw size={18} />
-            Réinitialiser
+            {t('reset')}
           </button>
 
           <button
@@ -322,7 +325,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
             className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
           >
             <Save size={18} />
-            Sauvegarder
+            {t('save')}
           </button>
         </div>
       </div>
@@ -356,7 +359,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                       className="inline-flex items-center gap-2 min-w-[140px] text-left px-4 py-3 rounded-lg transition-colors border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-600 hover:text-blue-600"
                     >
                       <Plus size={18} />
-                      <span className="font-medium">Section Personnalisée</span>
+                      <span className="font-medium">{t('addCustomSection')}</span>
                     </button>
                   </nav>
                 </div>
@@ -366,12 +369,12 @@ const CVEditor: React.FC<CVEditorProps> = ({
             {activeSection === "personal" && (
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                  Informations Personnelles
+                  {t('personalInfo')}
                 </h3>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom Complet
+                    {t('fullName')}
                   </label>
                   <input
                     type="text"
@@ -385,7 +388,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Titre Professionnel
+                    {t('professionalTitle')}
                   </label>
                   <input
                     type="text"
@@ -412,7 +415,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                     >
                       
                       <span className="text-2xl">📸</span> 
-                      Importer votre image portfeuil
+                      {t('uploadImage')}
                     </button>
                   )}
 
@@ -435,7 +438,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                         <button
                           onClick={handleRemoveImage}
                           className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg hover:bg-red-700"
-                          aria-label="Supprimer la photo"
+                          aria-label={t('removeImage')}
                         >
                           <Trash2 size={14} />
                         </button>
@@ -452,7 +455,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                     {`${!imagePreviewUrl ? 'hidden' : 'block pointer text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600'}`}
                    />
                    {imagePreviewUrl && (
-                     <p className="text-xs text-gray-500 mt-1"> Max 5 Mo. Formats acceptés : JPG, PNG, GIF. </p>
+                     <p className="text-xs text-gray-500 mt-1"> {t('maxFileSize')} </p>
                    )}
                    </div>
                   </div>
@@ -466,7 +469,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
             {activeSection === "profile" && (
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                  Profil Professionnel
+                  {t('profile')}
                 </h3>
 
                 <textarea
@@ -482,12 +485,12 @@ const CVEditor: React.FC<CVEditorProps> = ({
             {activeSection === "contact" && (
               <div className="space-y-4">
                 <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                  Contact
+                  {t('contact')}
                 </h3>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email
+                    {t('email')}
                   </label>
                   <input
                     type="email"
@@ -501,7 +504,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Téléphone
+                    {t('phone')}
                   </label>
                   <input
                     type="tel"
@@ -515,7 +518,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Localisation
+                    {t('location')}
                   </label>
                   <input
                     type="text"
@@ -529,11 +532,11 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    GitHub
+                    {t('github')}
                   </label>
                   <input
                     type="text"
-                    value={data.contact.github}
+                    value={data.contact.github ? data.contact.github : ''}
                     onChange={(e) =>
                       updateField(["contact", "github"], e.target.value)
                     }
@@ -543,11 +546,11 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    LinkedIn
+                    {t('linkedin')}
                   </label>
                   <input
                     type="text"
-                    value={data.contact.linkedin}
+                    value={data.contact.linkedin ? data.contact.linkedin : ''}
                     onChange={(e) =>
                       updateField(["contact", "linkedin"], e.target.value)
                     }
@@ -562,14 +565,14 @@ const CVEditor: React.FC<CVEditorProps> = ({
               <div className="space-y-4">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-800">
-                    Domaines de Compétences
+                    {t('skills')}
                   </h3>
                   <button
                     onClick={addSkill}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Plus size={18} />
-                    Ajouter
+                    {t('addSkill')}
                   </button>
                 </div>
 
@@ -580,7 +583,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                       onChange={(e) => updateSkill(index, e.target.value)}
                       rows={2}
                       className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Compétence"
+                      placeholder={t('skillPlaceholder')}
                     />
                     <button
                       onClick={() => removeSkill(index)}
@@ -598,14 +601,14 @@ const CVEditor: React.FC<CVEditorProps> = ({
               <div className="space-y-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-800">
-                    Environnements Techniques
+                    {t('technologies')}
                   </h3>
                   <button
                     onClick={addTechnologyCategory}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Plus size={18} />
-                    Ajouter Catégorie
+                    {t('addTechCategory')}
                   </button>
                 </div>
 
@@ -622,7 +625,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                           updateTechnologyTitle(index, e.target.value)
                         }
                         className="text-lg font-semibold text-gray-800 px-2 py-1 border border-gray-300 rounded-lg flex-1"
-                        placeholder="Titre de la catégorie"
+                        placeholder={t('categoryTitle')}
                       />
                       <button
                         onClick={() => removeTechnologyCategory(index)}
@@ -634,7 +637,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Éléments (séparés par des virgules)
+                        {t('items')}
                       </label>
                       <textarea
                         value={techCategory.items}
@@ -643,7 +646,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                         }
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder="Ex: PHP 7, JavaScript, TypeScript"
+                        placeholder={t('techPlaceholder')}
                       />
                     </div>
                   </div>
@@ -656,14 +659,14 @@ const CVEditor: React.FC<CVEditorProps> = ({
               <div className="space-y-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-800">
-                    Expériences Professionnelles
+                    {t('experiences')}
                   </h3>
                   <button
                     onClick={addExperience}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Plus size={18} />
-                    Ajouter
+                    {t('addExperience')}
                   </button>
                 </div>
 
@@ -674,7 +677,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                   >
                     <div className="flex justify-between items-start">
                       <h4 className="text-lg font-bold text-gray-800">
-                        Expérience {expIndex + 1}
+                        {t('experience')} {expIndex + 1}
                       </h4>
                       <button
                         onClick={() => removeExperience(expIndex)}
@@ -686,7 +689,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Titre du Poste
+                        {t('jobTitle')}
                       </label>
                       <input
                         type="text"
@@ -705,7 +708,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Entreprise
+                        {t('company')}
                       </label>
                       <input
                         type="text"
@@ -725,14 +728,14 @@ const CVEditor: React.FC<CVEditorProps> = ({
                     <div>
                       <div className="flex justify-between items-center mb-2">
                         <label className="block text-sm font-medium text-gray-700">
-                          Missions
+                          {t('missions')}
                         </label>
                         <button
                           onClick={() => addMission(expIndex)}
                           className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
                         >
                           <Plus size={14} />
-                          Mission
+                          {t('addMission')}
                         </button>
                       </div>
 
@@ -750,7 +753,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                               }
                               rows={2}
                               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                              placeholder="Mission ou Stack"
+                              placeholder={t('missionPlaceholder')}
                             />
                             <button
                               onClick={() =>
@@ -773,13 +776,13 @@ const CVEditor: React.FC<CVEditorProps> = ({
             {activeSection === "languages" && (
               <div className="space-y-4">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">Langues</h3>
+                  <h3 className="text-2xl font-bold text-gray-800">{t('languages')}</h3>
                   <button
                     onClick={addLanguage}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Plus size={18} />
-                    Ajouter
+                    {t('addLanguage')}
                   </button>
                 </div>
 
@@ -790,7 +793,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                   >
                     <div className="flex justify-between items-start">
                       <h4 className="text-sm font-bold text-gray-700">
-                        Langue {index + 1}
+                        {t('language')} {index + 1}
                       </h4>
                       <button
                         onClick={() => removeLanguage(index)}
@@ -803,7 +806,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                     <div className="grid grid-cols-3 gap-3">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Nom
+                          {t('name')}
                         </label>
                         <input
                           type="text"
@@ -817,7 +820,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Drapeau
+                          {t('flag')}
                         </label>
                         <input
                           type="text"
@@ -832,7 +835,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Niveau
+                          {t('level')}
                         </label>
                         <input
                           type="text"
@@ -854,14 +857,14 @@ const CVEditor: React.FC<CVEditorProps> = ({
               <div className="space-y-4">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-gray-800">
-                    Certifications
+                    {t('certifications')}
                   </h3>
                   <button
                     onClick={addCertification}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Plus size={18} />
-                    Ajouter
+                    {t('addCertification')}
                   </button>
                 </div>
 
@@ -872,7 +875,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                   >
                     <div className="flex justify-between items-start">
                       <h4 className="text-sm font-bold text-gray-700">
-                        Certification {index + 1}
+                        {t('certification')} {index + 1}
                       </h4>
                       <button
                         onClick={() => removeCertification(index)}
@@ -885,7 +888,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                     <div className="space-y-3">
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Nom
+                          {t('name')}
                         </label>
                         <input
                           type="text"
@@ -904,7 +907,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
                       <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">
-                          Organisme
+                          {t('issuer')}
                         </label>
                         <input
                           type="text"
@@ -932,54 +935,54 @@ const CVEditor: React.FC<CVEditorProps> = ({
                 <div key={customSection.id} className="space-y-4">
                   <div className="flex justify-between items-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-800">
-                      Section Personnalisée
+                      {t('customSection')}
                     </h3>
                     <button
                       onClick={() => removeCustomSection(customSection.id)}
                       className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
                     >
                       <Trash2 size={18} />
-                      Supprimer Section
+                      {t('removeSection')}
                     </button>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Titre de la Section
+                      {t('sectionTitle')}
                     </label>
                     <input
                       type="text"
                       value={customSection.title}
                       onChange={(e) => updateCustomSectionTitle(customSection.id, e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Ex: Projets, Publications, Récompenses..."
+                      placeholder={t('sectionPlaceholder')}
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Sous-titre (optionnel)
+                      {t('subtitle')}
                     </label>
                     <input
                       type="text"
                       value={customSection.subtitle || ""}
                       onChange={(e) => updateCustomSectionSubtitle(customSection.id, e.target.value)}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder="Sous-titre optionnel"
+                      placeholder={t('subtitlePlaceholder')}
                     />
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
                       <label className="block text-sm font-medium text-gray-700">
-                        Contenu
+                        {t('content')}
                       </label>
                       <button
                         onClick={() => addCustomSectionBlock(customSection.id)}
                         className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
                       >
                         <Plus size={14} />
-                        Bloc
+                        {t('addBlock')}
                       </button>
                     </div>
 
@@ -991,7 +994,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                             onChange={(e) => updateCustomSectionBlock(customSection.id, blockIndex, e.target.value)}
                             rows={3}
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder="Contenu du bloc"
+                            placeholder={t('blockPlaceholder')}
                           />
                           <button
                             onClick={() => removeCustomSectionBlock(customSection.id, blockIndex)}

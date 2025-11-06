@@ -1,0 +1,72 @@
+{
+  "English_2lex3k": {
+    "timestamp": 1762338144660,
+    "language": "English",
+    "file": "English_2lex3k.json"
+  },
+  "Arabic_2lex3k": {
+    "timestamp": 1762338170873,
+    "language": "Arabic",
+    "file": "Arabic_2lex3k.json"
+  },
+  "English_v2tic8": {
+    "timestamp": 1762348839916,
+    "language": "English",
+    "file": "English_v2tic8.json"
+  },
+  "English_ukzyio": {
+    "timestamp": 1762351578456,
+    "language": "English",
+    "file": "English_ukzyio.json"
+  },
+  "English_ty1ouj": {
+    "timestamp": 1762352012030,
+    "language": "English",
+    "file": "English_ty1ouj.json"
+  },
+  "English_hlj80q": {
+    "timestamp": 1762352162789,
+    "language": "English",
+    "file": "English_hlj80q.json"
+  },
+  "English_ibdvv7": {
+    "timestamp": 1762357025941,
+    "language": "English",
+    "file": "English_ibdvv7.json"
+  },
+  "English_m4mlms": {
+    "timestamp": 1762357763273,
+    "language": "English",
+    "file": "English_m4mlms.json"
+  },
+  "English_dmszev": {
+    "timestamp": 1762358245227,
+    "language": "English",
+    "file": "English_dmszev.json"
+  },
+  "English_tynk57": {
+    "timestamp": 1762417047439,
+    "language": "English",
+    "file": "English_tynk57.json"
+  },
+  "Arabic_tmes0t": {
+    "timestamp": 1762417970848,
+    "language": "Arabic",
+    "file": "Arabic_tmes0t.json"
+  },
+  "French_tmes0t": {
+    "timestamp": 1762418023141,
+    "language": "French",
+    "file": "French_tmes0t.json"
+  },
+  "English_tmes0t": {
+    "timestamp": 1762418728445,
+    "language": "English",
+    "file": "English_tmes0t.json"
+  },
+  "English_yjoug2": {
+    "timestamp": 1762418783144,
+    "language": "English",
+    "file": "English_yjoug2.json"
+  }
+}

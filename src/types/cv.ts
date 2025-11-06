@@ -2,8 +2,8 @@ export interface ContactInfo {
   email: string;
   phone: string;
   location: string;
-  github: string;
-  linkedin: string;
+  github: string | null;  
+  linkedin: string | null; 
 }
 
 export interface Experience {

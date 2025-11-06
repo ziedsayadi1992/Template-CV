@@ -1,0 +1,151 @@
+{
+  "personalInfo": {
+    "fullName": "Inés Mohamed",
+    "professionalTitle": "Front End WordPress Developer",
+    "avatarUrl": ""
+  },
+  "profile": "I am currently a Front-End developer at CoccinetTunis and I am looking for new opportunities.",
+  "contact": {
+    "email": "inessmed@gmail.com",
+    "phone": "(+216)54518588",
+    "location": "Tunis",
+    "github": null,
+    "linkedin": null
+  },
+  "skills": [
+    "Dynamic",
+    "Team spirit",
+    "Versatile"
+  ],
+  "technologies": [
+    {
+      "id": "1",
+      "title": "Technologies",
+      "items": "VueJS, React JS, Typescript, HTML5 , CSS3 & Jquery, PHP & SQL, Wordpress, Drupal, CodeIgniter, Bootstrap, GIT, Symfony"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "1",
+      "jobTitle": "WordPress Developer/Integrator",
+      "company": "Coccinet",
+      "missions": [
+        "Integration and development of various websites with WordPress (Html, CSS, Javascript, Figma, XD) (integration From scratch, integration with page Builders )"
+      ]
+    },
+    {
+      "id": "2",
+      "jobTitle": "Web Developer",
+      "company": "Ouidev",
+      "missions": [
+        "Integration and Development of websites with WordPress (Divi, Woocommerce..)",
+        "Take charge of updates and optimization of the site https://www.bracelet-chemin-de-vie.fr/"
+      ]
+    },
+    {
+      "id": "3",
+      "jobTitle": "Front End WordPress Developer",
+      "company": "Aymax",
+      "missions": [
+        "Integration and Development of websites with WordPress (Front/back)",
+        "Development of WordPress websites with the Elementor page builder"
+      ]
+    },
+    {
+      "id": "4",
+      "jobTitle": "Integrator/ WP Developer",
+      "company": "CosaVostra",
+      "missions": [
+        "Transforming graphic mockups into HTML/CSS/JS pages",
+        "Respecting standards and best practices (accessibility (A11Y), natural referencing, performance, etc.)",
+        "Ensuring optimal rendering on all the main browsers on the market",
+        "Applying the principles of RWD (fluid CSS integration, mobile first, etc.)",
+        "Working closely with the UX/UI teams, back devs and project managers",
+        "Analyzing and taking charge of the functionalities described in the CDC",
+        "Supporting the choice of technical solutions",
+        "VueJS2 and 3 training on the Dyma.fr platform"
+      ]
+    },
+    {
+      "id": "5",
+      "jobTitle": "WordPress Developer",
+      "company": "STA MEA",
+      "missions": [
+        "Website redesign with WordPress, some references: https://www.onvousforme.fr/ https://www.bretagne-securite-services.fr/ https://www.ageps.fr/"
+      ]
+    },
+    {
+      "id": "6",
+      "jobTitle": "WordPress Developer",
+      "company": "Coccinet",
+      "missions": [
+        "Integration and Development of custom WP themes (front/back)",
+        "Implementation of animations with native JS.",
+        "Customization of the back-office for easy handling for the client.",
+        "Analyze the client's need by reading the specification documents.",
+        "Some References: • first French and solidarity image bank: https://www.picandpick.com/ • ADN Management is a company specializing in transition management: https://www.adn-partners.com/ • https://www.biscuitsgateaux.com/"
+      ]
+    },
+    {
+      "id": "7",
+      "jobTitle": "Web Developer",
+      "company": "Capitol So ",
+      "missions": [
+        "Development and manipulation of websites with the CodeIgniter framework",
+        "Implementation of CMS (WordPress) and development of websites"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Français",
+      "flag": "",
+      "level": "courant"
+    },
+    {
+      "name": "Anglais",
+      "flag": "",
+      "level": ""
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Fundamental License in Computer Science",
+      "issuer": "Institut supérieure informatique multimédia Sfax"
+    },
+    {
+      "name": "High School Diploma",
+      "issuer": "Lycée bolbeba Gabes"
+    },
+    {
+      "name": "REACT JS Training",
+      "issuer": "Coccinet Agency"
+    },
+    {
+      "name": "Communication English",
+      "issuer": "CRIF Center"
+    },
+    {
+      "name": "Certificate of participation in Startup Weekend Sfax 3",
+      "issuer": "E-commerce platform"
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": "Professional Profile",
+    "skills": "SKILLS",
+    "technologies": "Technologies",
+    "experiences": "PROFESSIONAL EXPERIENCES",
+    "certifications": "DIPLOMAS AND TRAINING",
+    "languages": "LANGUAGES"
+  }
+}

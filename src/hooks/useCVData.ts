@@ -1,86 +1,90 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { CVData } from '../types/cv';
+import { useState, useEffect } from 'react';
 import { CV_DATA } from '../data/cvData';
-import { migrateLegacyData, createEmptyCV } from '../utils/cvHelpers';
-
-const STORAGE_KEY = 'cv-data';
-const AUTOSAVE_DELAY = 2000;
+import type { CVData } from '../types/cv';
 
 export const useCVData = () => {
-  const [cvData, setCvData] = useState<CVData>(() => {
-    const savedData = localStorage.getItem(STORAGE_KEY);
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        return migrateLegacyData(parsed);
-      } catch (error) {
-        console.error('Error parsing saved CV data:', error);
-        return CV_DATA;
-      }
+  const [cvData, setCVData] = useState<CVData>(() => {
+    // ✅ Try to load from localStorage first, fallback to CV_DATA
+    try {
+      const saved = localStorage.getItem('cvData');
+      return saved ? JSON.parse(saved) : CV_DATA;
+    } catch (err) {
+      console.error('Failed to load CV data from localStorage:', err);
+      return CV_DATA;
     }
-    return CV_DATA;
   });
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
-  const autoSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Save to localStorage when data changes
   useEffect(() => {
-    if (autoSaveEnabled && hasUnsavedChanges) {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-
-      autoSaveTimeoutRef.current = setTimeout(() => {
-        saveCVData();
-      }, AUTOSAVE_DELAY);
-    }
-
-    return () => {
-      if (autoSaveTimeoutRef.current) {
-        clearTimeout(autoSaveTimeoutRef.current);
-      }
-    };
-  }, [cvData, hasUnsavedChanges, autoSaveEnabled]);
-
-  const updateCVData = useCallback((newData: CVData) => {
-    setCvData(newData);
-    setHasUnsavedChanges(true);
-  }, []);
-
-  const saveCVData = useCallback(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cvData));
-      setHasUnsavedChanges(false);
-      return true;
-    } catch (error) {
-      console.error('Error saving CV data:', error);
-      return false;
+      localStorage.setItem('cvData', JSON.stringify(cvData));
+    } catch (err) {
+      console.error('Failed to save CV data to localStorage:', err);
     }
   }, [cvData]);
 
-  const resetCVData = useCallback(() => {
-    setCvData(CV_DATA);
-    localStorage.removeItem(STORAGE_KEY);
-    setHasUnsavedChanges(false);
-  }, []);
-
-  const createNewCV = useCallback(() => {
-    const emptyCV = createEmptyCV();
-    setCvData(emptyCV);
-    localStorage.removeItem(STORAGE_KEY);
-    setHasUnsavedChanges(false);
-  }, []);
-
-  const loadCVData = useCallback((data: CVData) => {
-    const migratedData = migrateLegacyData(data);
-    setCvData(migratedData);
+  const updateCVData = (newData: CVData) => {
+    setCVData(newData);
     setHasUnsavedChanges(true);
-  }, []);
+  };
 
-  const toggleAutoSave = useCallback(() => {
-    setAutoSaveEnabled(prev => !prev);
-  }, []);
+  const saveCVData = () => {
+    try {
+      localStorage.setItem('cvData', JSON.stringify(cvData));
+      setHasUnsavedChanges(false);
+      return true;
+    } catch (err) {
+      console.error('Failed to save CV data:', err);
+      return false;
+    }
+  };
+
+  const resetCVData = () => {
+    setCVData(CV_DATA);
+    setHasUnsavedChanges(false);
+  };
+
+  const createNewCV = () => {
+    const emptyCV: CVData = {
+      personalInfo: {
+        fullName: '',
+        professionalTitle: '',
+        avatarUrl: ''
+      },
+      profile: '',
+      contact: {
+        email: '',
+        phone: '',
+        location: '',
+        github: null,
+        linkedin: null
+      },
+      skills: [],
+      technologies: [],
+      experiences: [],
+      languages: [],
+      certifications: [],
+      customSections: [],
+      sectionOrder: ['personal', 'profile', 'skills', 'technologies', 'experiences', 'certifications', 'languages'],
+      sectionTitles: {
+        profile: 'Profil Professionnel',
+        skills: 'Compétences',
+        technologies: 'Environnement Technique',
+        experiences: 'Expériences Professionnelles',
+        certifications: 'Certifications',
+        languages: 'Langues'
+      }
+    };
+    setCVData(emptyCV);
+    setHasUnsavedChanges(true);
+  };
+
+  const loadCVData = (newData: CVData) => {
+    setCVData(newData);
+    setHasUnsavedChanges(true);
+  };
 
   return {
     cvData,
@@ -89,8 +93,6 @@ export const useCVData = () => {
     resetCVData,
     createNewCV,
     loadCVData,
-    hasUnsavedChanges,
-    autoSaveEnabled,
-    toggleAutoSave
+    hasUnsavedChanges
   };
 };

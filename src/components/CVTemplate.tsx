@@ -1,11 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react'; 
+import React, { useRef, useEffect, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { Download, Languages } from 'lucide-react';
 import { CV_DATA } from '../data/cvData';
 import PrintableCVContent from './PrintableCVContent';
 import type { CVData } from '../types/cv';
-import { translateCV } from '../Api/translate';
-import Spinner from './Spinner';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useImprovedTranslate } from '../hooks/useImprovedTranslate';
+import { rebuildJSON } from '../utils/chunkHelpers';
 
 interface CVTemplateProps {
   data?: CVData;
@@ -13,49 +14,79 @@ interface CVTemplateProps {
 
 const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   const componentRef = useRef<HTMLDivElement>(null);
-  const [cvData, setCvData] = useState<CVData>(data);
-  const [lang, setLang] = useState<string>('Français');
-  const [loading, setLoading] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
+  const { currentLanguage, setLanguage, translatedCV, setTranslatedCV, t, translationCache, isTranslating, setIsTranslating } = useLanguage();
+  const { translateStream, progress } = useImprovedTranslate();
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Simulate page loading
+  const displayData = translatedCV || data;
+
+  // ✅ Safety check: don't render if no data
+  if (!displayData || !displayData.personalInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading CV data...</p>
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setPageLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  // ✅ Auto-translate when language changes
-  useEffect(() => {
-    const handleTranslate = async () => {
-      // Skip translation on initial mount (Français is default)
-      if (lang === 'Français') {
-        setCvData(data);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const translated = await translateCV(lang, data);
-        setCvData(translated);
-      } catch (err) {
-        console.error('Translation failed:', err);
-        alert('Translation failed. Check console.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!pageLoading) {
-      handleTranslate();
+    if (!hasInitialized) {
+      setHasInitialized(true);
+      return;
     }
-  }, [lang, data, pageLoading]);
+
+    if (currentLanguage === 'Français') {
+      setTranslatedCV(null);
+      setIsTranslating(false);
+      return;
+    }
+
+    const cached = translationCache.get(data, currentLanguage);
+    if (cached) {
+      console.log(`✅ Using cached translation for ${currentLanguage}`);
+      setTranslatedCV(cached);
+      setIsTranslating(false);
+      return;
+    }
+
+    console.log(`🌍 Translating to ${currentLanguage}...`);
+    setIsTranslating(true);
+    let assembledText = '';
+
+    const abort = translateStream(
+      currentLanguage,
+      data,
+      (partialText) => {
+        assembledText = partialText;
+        try {
+          const partial = rebuildJSON(assembledText);
+          setTranslatedCV(partial);
+        } catch {
+          // Not valid yet
+        }
+      },
+      (result) => {
+        setTranslatedCV(result);
+        translationCache.set(data, currentLanguage, result);
+        setIsTranslating(false);
+      },
+      (error) => {
+        console.error('Translation failed:', error);
+        setIsTranslating(false);
+      }
+    );
+
+    return () => {
+      if (abort) abort();
+    };
+  }, [currentLanguage]);
 
   const handlePrintPDF = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `${cvData.personalInfo.fullName} - CV`,
+    documentTitle: `${displayData.personalInfo.fullName || 'CV'} - CV`,
     pageStyle: `
       @page {
         size: A4;
@@ -86,14 +117,9 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   });
 
   const handleReset = () => {
-    setLang('Français');
-    setCvData(data);
+    setLanguage('Français');
+    setTranslatedCV(null);
   };
-
-  // Show spinner during page load or translation
-  if (pageLoading || loading) {
-    return <Spinner />;
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
@@ -105,17 +131,33 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
         <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-indigo-200 transform rotate-12 opacity-20"></div>
       </div>
 
-      {/* Controls */}
+      {isTranslating && (
+        <div className="no-print fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-white px-6 py-3 rounded-lg shadow-lg border border-gray-200">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+            <span className="text-gray-700 font-medium">{t('translating')}</span>
+            <span className="text-sm text-gray-500">
+              {progress.percentage}%
+            </span>
+          </div>
+          <div className="mt-2 w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-600 transition-all duration-300"
+              style={{ width: `${progress.percentage}%` }}
+            ></div>
+          </div>
+        </div>
+      )}
+
       <div className="no-print fixed top-6 right-6 z-50 flex gap-3">
-        {/* Language selector with icon */}
         <div className="relative">
           <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
             <Languages size={18} className="text-gray-600" />
           </div>
           <select
-            value={lang}
-            onChange={(e) => setLang(e.target.value)}
-            disabled={loading}
+            value={currentLanguage}
+            onChange={(e) => setLanguage(e.target.value)}
+            disabled={isTranslating}
             className="pl-10 pr-8 py-2.5 bg-white border-2 border-gray-300 rounded-lg shadow-sm 
                      hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
                      transition-all duration-200 cursor-pointer appearance-none font-medium text-gray-700
@@ -126,7 +168,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
               backgroundPosition: 'right 0.75rem center',
             }}
           >
-            <option value="French">Français</option>
+            <option value="Français">Français</option>
             <option value="English">English</option>
             <option value="Arabic">العربية</option>
             <option value="German">Deutsch</option>
@@ -134,10 +176,9 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
           </select>
         </div>
 
-        {/* Reset button */}
         <button
           onClick={handleReset}
-          disabled={loading}
+          disabled={isTranslating}
           className="px-4 py-2.5 bg-gray-500 text-white rounded-lg shadow-sm hover:bg-gray-600 
                    transition-all duration-200 hover:scale-105 font-medium
                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
@@ -145,23 +186,21 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
           Reset
         </button>
 
-        {/* Print button */}
         <button
           onClick={handlePrintPDF}
-          disabled={loading}
+          disabled={isTranslating}
           className="flex items-center gap-2 px-4 py-2.5 bg-[#4590e6] text-white rounded-lg shadow-lg 
                    hover:bg-blue-600 transition-all duration-200 hover:scale-105 font-medium
                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          title="Export to PDF"
+          title={t('exportPdf')}
         >
           <Download size={18} />
-          PDF
+          {t('exportPdf')}
         </button>
       </div>
 
-      {/* CV Content */}
       <div className="flex justify-center items-center py-10">
-        <PrintableCVContent ref={componentRef} data={cvData} />
+        <PrintableCVContent ref={componentRef} data={displayData} />
       </div>
     </div>
   );
