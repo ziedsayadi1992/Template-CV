@@ -1,0 +1,133 @@
+{
+  "personalInfo": {
+    "fullName": "Asma Zarrouk",
+    "professionalTitle": null,
+    "avatarUrl": ""
+  },
+  "profile": null,
+  "contact": {
+    "email": "asma.zarrouk123@gmail.com",
+    "phone": "+216 27 647 334",
+    "location": null,
+    "github": null,
+    "linkedin": "linkedin.com/in/asmazarrouk"
+  },
+  "skills": [
+    "Gestión de proyectos",
+    "Comunicación con las partes interesadas",
+    "Coordinación de equipos",
+    "Resolución de problemas",
+    "Mejora continua"
+  ],
+  "technologies": [
+    {
+      "id": "1",
+      "title": "Tools & Technologies",
+      "items": "Jira, Redmine, Asana, Trello, Notion, Google Workspace, Microsoft Office Suite, Excel, Odoo, Android Studio, Java, PHP, MySQL, Scala, Akka HTTP"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "1",
+      "jobTitle": "Gerente de proyectos web",
+      "company": "Coccinet",
+      "missions": [
+        "Gestioné una cartera de más de 15 proyectos web, cumpliendo consistentemente con los plazos y obteniendo comentarios positivos de los clientes en todos los compromisos.",
+        "Supervisé las comunicaciones con las partes interesadas, asegurando la alineación con los clientes y los equipos internos.",
+        "Colaboré con los desarrolladores en la depuración, la configuración del servidor y el monitoreo de la seguridad, reduciendo los problemas técnicos en un 25%.",
+        "Dirigí equipos multifuncionales, manteniendo los proyectos a tiempo y asegurando que los entregables clave se completaran a tiempo.",
+        "Monitoreé los presupuestos de los proyectos y la facturación de los clientes, garantizando la precisión financiera y el cumplimiento de los contratos."
+      ]
+    },
+    {
+      "id": "2",
+      "jobTitle": "Asistente de gerente de proyectos de desarrollo de software",
+      "company": "Smart Conseil",
+      "missions": [
+        "Monitoreé los KPI y los costos del proyecto, asegurando una asignación óptima de los recursos y la alineación con los objetivos comerciales.",
+        "Facilité las ceremonias Agile para un equipo de 8 a 10 desarrolladores, eliminando los obstáculos y mejorando la eficiencia del sprint.",
+        "Realicé entrevistas técnicas y revisiones de código, apoyando las decisiones finales de contratación.",
+        "Coordiné la comunicación entre los desarrolladores, los propietarios de productos y los PM, asegurando la alineación en los objetivos y los entregables del proyecto."
+      ]
+    },
+    {
+      "id": "3",
+      "jobTitle": "Coordinador de proyectos de TI",
+      "company": "KBO Solution",
+      "missions": [
+        "Actué como coordinador clave entre el gerente de proyecto, que interactuaba con los clientes para recopilar requisitos, y los desarrolladores independientes, traduciendo las necesidades de los clientes en especificaciones técnicas detalladas.",
+        "Colaboré con desarrolladores independientes en un proyecto de alta prioridad, proporcionando especificaciones detalladas y realizando controles diarios para garantizar el progreso y la alineación.",
+        "Revisé y probé los entregables, asegurando que se cumplieran los estándares de calidad."
+      ]
+    },
+    {
+      "id": "4",
+      "jobTitle": "Becario de desarrollador móvil",
+      "company": "BMCAF",
+      "missions": [
+        "Diseñé, desarrollé e implementé una aplicación de juego de aprendizaje fácil de usar para Android utilizando Java y Android Studio, mejorando las experiencias de aprendizaje para los usuarios.",
+        "Creé una API RESTful de PHP que permite la recuperación de datos.",
+        "Desarrollé un panel basado en PHP para administradores, facilitando la gestión eficiente de contenido, la gestión de cuentas de usuario y el análisis de datos."
+      ]
+    },
+    {
+      "id": "5",
+      "jobTitle": "Becario de desarrollador backend",
+      "company": "Cognira",
+      "missions": [
+        "Desarrollé microservicios en Scala con Akka HTTP.",
+        "Creé API RESTful para un intercambio de datos eficiente y seguro entre microservicios.",
+        "Conecté microservicios a MySQL, diseñé esquemas y optimicé el almacenamiento de datos."
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Arabic",
+      "flag": "",
+      "level": "Native language"
+    },
+    {
+      "name": "English",
+      "flag": "",
+      "level": "Fluent"
+    },
+    {
+      "name": "French",
+      "flag": "",
+      "level": "Fluent"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Scrum Fundamentals Certified (SFC), SCRUMstudy",
+      "issuer": "SCRUMstudy"
+    },
+    {
+      "name": "English for Science, Technology, Engineering, and Mathematics MOOC",
+      "issuer": null
+    },
+    {
+      "name": "English for Career Development Self-Paced MOOC",
+      "issuer": null
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": null,
+    "skills": "Habilidades",
+    "technologies": null,
+    "experiences": "Experiencia",
+    "certifications": "Certificaciones y Cursos",
+    "languages": "Idiomas"
+  }
+}

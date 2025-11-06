@@ -1,0 +1,133 @@
+{
+  "personalInfo": {
+    "fullName": "Asma Zarrouk",
+    "professionalTitle": null,
+    "avatarUrl": ""
+  },
+  "profile": null,
+  "contact": {
+    "email": "asma.zarrouk123@gmail.com",
+    "phone": "+216 27 647 334",
+    "location": null,
+    "github": null,
+    "linkedin": "linkedin.com/in/asmazarrouk"
+  },
+  "skills": [
+    "Project Management",
+    "Stakeholder Communication",
+    "Team Coordination",
+    "Problem Solving",
+    "Continuous Improvement"
+  ],
+  "technologies": [
+    {
+      "id": "1",
+      "title": "Tools & Technologies",
+      "items": "Jira, Redmine, Asana, Trello, Notion, Google Workspace, Microsoft Office Suite, Excel, Odoo, Android Studio, Java, PHP, MySQL, Scala, Akka HTTP"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "1",
+      "jobTitle": "Web Project Manager",
+      "company": "Coccinet",
+      "missions": [
+        "Managed a portfolio of 15+ web projects, consistently delivering on schedule and earning positive client feedback across all engagements.",
+        "Oversaw stakeholder communications, ensuring alignment with clients and internal teams.",
+        "Collaborated with developers on debugging, server setup, and security monitoring, reducing technical issues by 25%.",
+        "Led cross-functional teams, keeping projects on schedule and ensuring key deliverables were completed on time.",
+        "Monitored project budgets and client billing ensuring financial accuracy and contract compliance."
+      ]
+    },
+    {
+      "id": "2",
+      "jobTitle": "Software Development Project Manager Assistant",
+      "company": "Smart Conseil",
+      "missions": [
+        "Monitored project KPIs and costs, ensuring optimal resource allocation and alignment with business objectives.",
+        "Facilitated Agile ceremonies for a team of 8–10 developers, removing blockers and improving sprint efficiency.",
+        "Conducted technical interviews and code reviews, supporting final hiring decisions.",
+        "Coordinated communication between developers, product owners, and PMs, ensuring alignment on project goals and deliverables."
+      ]
+    },
+    {
+      "id": "3",
+      "jobTitle": "IT Project Coordinator",
+      "company": "KBO Solution",
+      "missions": [
+        "Acted as the key coordinator between the project manager, who interfaced with clients to gather requirements, and freelance developers, translating client needs into detailed technical specifications.",
+        "Collaborated with freelance developers on a high-priority project, providing detailed specifications and conducting daily check-ins to ensure progress and alignment.",
+        "Reviewed and tested deliverables, ensuring quality standards were met."
+      ]
+    },
+    {
+      "id": "4",
+      "jobTitle": "Mobile Developer Trainee",
+      "company": "BMCAF",
+      "missions": [
+        "Designed, developed, and implemented a user-friendly learning game application for Android using Java and Android Studio, enhancing learning experiences for users.",
+        "Created a PHP RESTful API enabling data retrieval.",
+        "Developed a PHP-based dashboard for administrators, facilitating efficient content management, user account management, and data analysis."
+      ]
+    },
+    {
+      "id": "5",
+      "jobTitle": "Backend Developer Trainee",
+      "company": "Cognira",
+      "missions": [
+        "Developed microservices in Scala with Akka HTTP.",
+        "Created RESTful APIs for efficient and secure data exchange between microservices.",
+        "Connected microservices to MySQL, designed schemas, and optimized data storage."
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Arabic",
+      "flag": "",
+      "level": "Native language"
+    },
+    {
+      "name": "English",
+      "flag": "",
+      "level": "Fluent"
+    },
+    {
+      "name": "French",
+      "flag": "",
+      "level": "Fluent"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Scrum Fundamentals Certified (SFC), SCRUMstudy",
+      "issuer": "SCRUMstudy"
+    },
+    {
+      "name": "English for Science, Technology, Engineering, and Mathematics MOOC",
+      "issuer": null
+    },
+    {
+      "name": "English for Career Development Self-Paced MOOC",
+      "issuer": null
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": null,
+    "skills": "Skills",
+    "technologies": null,
+    "experiences": "Experience",
+    "certifications": "Certifications & Courses",
+    "languages": "Languages"
+  }
+}

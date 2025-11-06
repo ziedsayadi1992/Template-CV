@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
-import { Download, Languages } from 'lucide-react';
+import { Download, Languages, RotateCcw } from 'lucide-react';
 import { CV_DATA } from '../data/cvData';
 import PrintableCVContent from './PrintableCVContent';
 import type { CVData } from '../types/cv';
@@ -18,15 +18,33 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   const { translateStream, progress } = useImprovedTranslate();
   const [hasInitialized, setHasInitialized] = useState(false);
 
-  const displayData = translatedCV || data;
+  // ✅ FIX: Ensure data always has a fallback and proper structure
+  const safeData = React.useMemo(() => {
+    if (!data) return CV_DATA;
+    
+    if (!data.personalInfo) {
+      console.warn('⚠️ Missing personalInfo, using defaults');
+      return {
+        ...CV_DATA,
+        ...data,
+        personalInfo: CV_DATA.personalInfo
+      };
+    }
+    
+    return data;
+  }, [data]);
 
-  // ✅ Safety check: don't render if no data
-  if (!displayData || !displayData.personalInfo) {
+  const displayData = translatedCV || safeData;
+
+  // ✅ FIX: More lenient safety check with console logging
+  if (!displayData) {
+    console.error('❌ No display data available');
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading CV data...</p>
+          <p className="text-gray-600">Initializing CV...</p>
+          <p className="text-sm text-gray-400 mt-2">If this persists, try clearing your browser cache</p>
         </div>
       </div>
     );
@@ -44,7 +62,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
       return;
     }
 
-    const cached = translationCache.get(data, currentLanguage);
+    const cached = translationCache.get(safeData, currentLanguage);
     if (cached) {
       console.log(`✅ Using cached translation for ${currentLanguage}`);
       setTranslatedCV(cached);
@@ -58,7 +76,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
 
     const abort = translateStream(
       currentLanguage,
-      data,
+      safeData,
       (partialText) => {
         assembledText = partialText;
         try {
@@ -70,23 +88,20 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
       },
       (result) => {
         setTranslatedCV(result);
-        translationCache.set(data, currentLanguage, result);
+        translationCache.set(safeData, currentLanguage, result);
         setIsTranslating(false);
-      },
-      (error) => {
-        console.error('Translation failed:', error);
-        setIsTranslating(false);
+        console.log(`✅ Translation complete for ${currentLanguage}`);
       }
     );
 
     return () => {
       if (abort) abort();
     };
-  }, [currentLanguage]);
+  }, [currentLanguage, safeData, hasInitialized]);
 
-  const handlePrintPDF = useReactToPrint({
+  const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `${displayData.personalInfo.fullName || 'CV'} - CV`,
+    documentTitle: `${displayData.personalInfo?.fullName || 'CV'} - CV`,
     pageStyle: `
       @page {
         size: A4;
@@ -116,92 +131,110 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
     `
   });
 
-  const handleReset = () => {
+  const handleResetLanguage = () => {
     setLanguage('Français');
     setTranslatedCV(null);
   };
 
+  // Show loading only during translation with progress
+  if (isTranslating && progress.percentage < 10) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="mt-4 text-gray-600">{t('translating')}</p>
+          {progress.total > 0 && (
+            <p className="text-sm text-gray-500 mt-2">
+              {progress.current} / {progress.total} chunks ({progress.percentage}%)
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
-      {/* Background Geometric Shapes */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      {/* ✅ FIXED: Better responsive CV controls bar */}
+      <div className="no-print sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 py-3">
+            {/* Language Selector */}
+            <div className="flex items-center gap-2">
+              <Languages size={18} className="text-gray-600" />
+              <select
+                value={currentLanguage}
+                onChange={(e) => setLanguage(e.target.value)}
+                disabled={isTranslating}
+                className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 cursor-pointer hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="Français">Français</option>
+                <option value="English">English</option>
+                <option value="Arabic">العربية</option>
+                <option value="German">Deutsch</option>
+                <option value="Spanish">Español</option>
+              </select>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2">
+              {/* Reset Language Button (visible only when translated) */}
+              {currentLanguage !== 'Français' && (
+                <button
+                  onClick={handleResetLanguage}
+                  disabled={isTranslating}
+                  className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-500 text-white rounded-lg shadow-md hover:bg-gray-600 transition-all duration-200 hover:scale-105 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  <RotateCcw size={16} />
+                  <span className="hidden sm:inline">{t('reset')}</span>
+                </button>
+              )}
+
+              {/* PDF Export Button */}
+              <button
+                onClick={handlePrint}
+                disabled={isTranslating}
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 hover:scale-105 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                title={t('exportPdf')}
+              >
+                <Download size={16} />
+                <span>{t('exportPdf')}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Translation Progress Bar */}
+          {isTranslating && progress.percentage >= 10 && (
+            <div className="pb-3">
+              <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                <span>{t('translating')}</span>
+                <span>{progress.percentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div 
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress.percentage}%` }}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-32 h-32 bg-blue-100 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-20 left-10 w-24 h-24 bg-indigo-100 rounded-full opacity-30"></div>
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-blue-200 transform rotate-45 opacity-25"></div>
-        <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-indigo-200 transform rotate-12 opacity-20"></div>
+        <div className="absolute top-10 right-10 w-32 h-32 bg-blue-100 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute bottom-20 left-10 w-40 h-40 bg-indigo-100 rounded-full opacity-20 blur-3xl"></div>
       </div>
 
-      {isTranslating && (
-        <div className="no-print fixed top-20 left-1/2 transform -translate-x-1/2 z-50 bg-white px-6 py-3 rounded-lg shadow-lg border border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-            <span className="text-gray-700 font-medium">{t('translating')}</span>
-            <span className="text-sm text-gray-500">
-              {progress.percentage}%
-            </span>
-          </div>
-          <div className="mt-2 w-48 h-2 bg-gray-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-blue-600 transition-all duration-300"
-              style={{ width: `${progress.percentage}%` }}
-            ></div>
+      {/* CV Content */}
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
+          <div ref={componentRef}>
+            <PrintableCVContent data={displayData} />
           </div>
         </div>
-      )}
-
-      <div className="no-print fixed top-6 right-6 z-50 flex gap-3">
-        <div className="relative">
-          <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <Languages size={18} className="text-gray-600" />
-          </div>
-          <select
-            value={currentLanguage}
-            onChange={(e) => setLanguage(e.target.value)}
-            disabled={isTranslating}
-            className="pl-10 pr-8 py-2.5 bg-white border-2 border-gray-300 rounded-lg shadow-sm 
-                     hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 
-                     transition-all duration-200 cursor-pointer appearance-none font-medium text-gray-700
-                     disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.75rem center',
-            }}
-          >
-            <option value="Français">Français</option>
-            <option value="English">English</option>
-            <option value="Arabic">العربية</option>
-            <option value="German">Deutsch</option>
-            <option value="Spanish">Español</option>
-          </select>
-        </div>
-
-        <button
-          onClick={handleReset}
-          disabled={isTranslating}
-          className="px-4 py-2.5 bg-gray-500 text-white rounded-lg shadow-sm hover:bg-gray-600 
-                   transition-all duration-200 hover:scale-105 font-medium
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-        >
-          Reset
-        </button>
-
-        <button
-          onClick={handlePrintPDF}
-          disabled={isTranslating}
-          className="flex items-center gap-2 px-4 py-2.5 bg-[#4590e6] text-white rounded-lg shadow-lg 
-                   hover:bg-blue-600 transition-all duration-200 hover:scale-105 font-medium
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-          title={t('exportPdf')}
-        >
-          <Download size={18} />
-          {t('exportPdf')}
-        </button>
-      </div>
-
-      <div className="flex justify-center items-center py-10">
-        <PrintableCVContent ref={componentRef} data={displayData} />
-      </div>
+      </main>
     </div>
   );
 };

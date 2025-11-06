@@ -581,188 +581,237 @@ function escapeControlCharsInStrings(jsonStr) {
   return result;
 }
 
-async function extractCVData(text) {
+// Add this to your server/index.js after the existing code
+
+// ============================================
+// RATE LIMIT HANDLER FOR PDF EXTRACTION
+// ============================================
+
+// Retry configuration
+const RETRY_CONFIG = {
+  maxRetries: 3,
+  baseDelay: 2000,      // Start with 2 seconds
+  maxDelay: 30000,      // Max 30 seconds
+  backoffMultiplier: 2   // Double each time
+};
+
+// Rate limit detection
+function isRateLimitError(error) {
+  const errorMessage = error.message || error.toString();
+  return errorMessage.includes('429') || 
+         errorMessage.includes('Too Many Requests') || 
+         errorMessage.includes('Resource exhausted') ||
+         errorMessage.includes('quota');
+}
+
+// Sleep function for delays
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Calculate exponential backoff delay
+function getBackoffDelay(retryCount) {
+  const delay = Math.min(
+    RETRY_CONFIG.baseDelay * Math.pow(RETRY_CONFIG.backoffMultiplier, retryCount),
+    RETRY_CONFIG.maxDelay
+  );
+  // Add jitter (random 0-25% variation) to prevent thundering herd
+  const jitter = delay * 0.25 * Math.random();
+  return Math.floor(delay + jitter);
+}
+
+// Improved extractCVData function with retry logic
+async function extractCVData(text, retryCount = 0) {
   const prompt = `
-      You are a highly-sophisticated **CV/Resume Parsing AI**. Your task is to intelligently read the following raw CV text, **infer its sectional structure (headings, lists, paragraphs)**, and then accurately map and extract all relevant information into a valid JSON object matching the **EXACT** provided schema.
+You are a professional CV parser. Your task is to intelligently read the following raw CV text, **infer its sectional structure (headings, lists, paragraphs)**, and then accurately map and extract all relevant information into a valid JSON object matching the **EXACT** provided schema.
 
-      ### JSON Schema (MUST be strictly followed):
-      {
-        "personalInfo": {
-          "fullName": string,
-          "professionalTitle": string,
-          "avatarUrl": ""
-        },
-        "profile": string (professional summary/objective - the main introductory text ONLY),
-        "contact": {
-          "email": string,
-          "phone": string,
-          "location": string,
-          "github": string,
-          "linkedin": string
-        },
-        "skills": [string array of SOFT/NON-TECHNICAL skills only],
-        "technologies": [
-          {
-            "id": string (unique id),
-            "title": string (category name),
-            "items": string (comma-separated list of technologies)
-          }
-        ],
-        "experiences": [
-          {
-            "id": string (unique id),
-            "jobTitle": string,
-            "company": string,
-            "missions": [string array]
-          }
-        ],
-        "languages": [
-          {
-            "name": string,
-            "flag": "",
-            "level": string
-          }
-        ],
-        "certifications": [
-          {
-            "name": string,
-            "issuer": string
-          }
-        ],
-        "customSections": [],
-        "sectionOrder": ["personal", "profile", "skills", "technologies", "experiences", "certifications", "languages"],
-        "sectionTitles": {
-          "profile": string (GENERIC section title in CV language - NOT the actual profile content),
-          "skills": string (GENERIC section title),
-          "technologies": string (GENERIC section title),
-          "experiences": string (GENERIC section title),
-          "certifications": string (GENERIC section title),
-          "languages": string (GENERIC section title)
-        }
-      }
-
-      ### CRITICAL PARSING RULES:
-
-      1.  **Section Titles vs Content:** 
-          - "sectionTitles" should contain GENERIC headers like "Profil Professionnel", "Compétences", etc.
-          - DO NOT put the actual profile text in "sectionTitles.profile"
-          - The actual profile text goes in the "profile" field
-          
-      2.  **Profile Field:**
-          - Extract ONLY the introductory summary/objective paragraph
-          - This is usually the first text block after personal info
-          - DO NOT repeat this text in sectionTitles
-
-      3.  **Skills vs Technologies:**
-          - "skills" = ONLY soft/personal skills (Dynamique, Leadership, Communication)
-          - "technologies" = ONLY technical skills (React, PHP, WordPress, Git)
-
-      4.  **Section Title Detection:**
-          - Look for CV section headers like "COMPÉTENCES", "EXPÉRIENCES PROFESSIONNELLES", etc.
-          - If a section header exists, use it for sectionTitles
-          - If no header exists, generate an appropriate generic title in the CV's language
-
-      5.  **No Duplication:** Each piece of information appears ONLY ONCE.
-
-      6.  **Language Detection:** Use section titles in the same language as the CV content.
-
-      7.  **String Formatting:** Keep each string on a SINGLE LINE.
-
-      8.  **Output Format:** Return ONLY valid JSON.
-
-      ### EXAMPLES:
-
-      **CORRECT (French CV):**
-      {
-        "profile": "je suis actuellement développeuse Front-End chez CoccinetTunis et je suis à la recherche d'une nouvelles opportunité.",
-        "sectionTitles": {
-          "profile": "Profil Professionnel",  // ✅ Generic title, NOT the profile content
-          "skills": "Compétences",
-          "technologies": "Environnement Technique",
-          "experiences": "Expériences Professionnelles",
-          "certifications": "Formations et Certifications",
-          "languages": "Langues"
-        }
-      }
-
-      **INCORRECT (DO NOT DO THIS):**
-      {
-        "profile": "je suis actuellement développeuse Front-End...",
-        "sectionTitles": {
-          "profile": "je suis actuellement développeuse Front-End...",  // ❌ WRONG: Using content as title
-          "skills": "Dynamique, Esprit d'équipe",  // ❌ WRONG: Using content as title
-        }
-      }
-
-      CV TEXT to parse:
-      ${text}
-
-      Return ONLY the JSON object:
-`;
-
-  let jsonString = '';
-  
-  try {
-    const result = await primaryModel.generateContent(prompt);
-    let rawText = result.response.text().trim();
-    
-    console.log("📄 Raw response length:", rawText.length);
-
-    // Remove markdown
-    rawText = rawText
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/\s*```$/i, '')
-      .replace(/```json/gi, '')
-      .replace(/```/g, '');
-    
-    // Find JSON boundaries
-    const firstBrace = rawText.indexOf('{');
-    const lastBrace = rawText.lastIndexOf('}');
-    
-    if (firstBrace === -1 || lastBrace === -1 || firstBrace >= lastBrace) {
-      throw new Error("No valid JSON structure found");
+### JSON Schema (MUST be strictly followed):
+{
+  "personalInfo": {
+    "fullName": string,
+    "professionalTitle": string,
+    "avatarUrl": ""
+  },
+  "profile": string (professional summary/objective - the main introductory text ONLY),
+  "contact": {
+    "email": string,
+    "phone": string,
+    "location": string,
+    "github": string,
+    "linkedin": string
+  },
+  "skills": [string array of SOFT/NON-TECHNICAL skills only],
+  "technologies": [
+    {
+      "id": string (unique id),
+      "title": string (category name),
+      "items": string (comma-separated list of technologies)
     }
-    
-    jsonString = rawText.substring(firstBrace, lastBrace + 1);
-    
-    // Escape control characters
-    jsonString = escapeControlCharsInStrings(jsonString);
-    
-    // Heal JSON
-    jsonString = healCVJSON(jsonString);
-    
-    // Parse
-    const parsedData = JSON.parse(jsonString);
-    
-    console.log("✅ CV extraction successful");
-    console.log("📝 Profile preview:", parsedData.profile?.substring(0, 50) + "...");
-    console.log("🏷️ Profile title:", parsedData.sectionTitles?.profile);
-    console.log("🔍 Skills:", parsedData.skills);
-    console.log("🔍 Tech categories:", parsedData.technologies?.map(t => t.title));
-    
-    return parsedData;
-    
-  } catch (error) {
-    console.error("❌ CV extraction failed:", error.message);
-    throw new Error("Failed to extract CV data: " + error.message);
+  ],
+  "experiences": [
+    {
+      "id": string (unique id),
+      "jobTitle": string,
+      "company": string,
+      "missions": [string array]
+    }
+  ],
+  "languages": [
+    {
+      "name": string,
+      "flag": "",
+      "level": string
+    }
+  ],
+  "certifications": [
+    {
+      "name": string,
+      "issuer": string
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": ["personal", "profile", "skills", "technologies", "experiences", "certifications", "languages"],
+  "sectionTitles": {
+    "profile": string (GENERIC section title in CV language - NOT the actual profile content),
+    "skills": string (GENERIC section title),
+    "technologies": string (GENERIC section title),
+    "experiences": string (GENERIC section title),
+    "certifications": string (GENERIC section title),
+    "languages": string (GENERIC section title)
   }
 }
 
-app.post("/api/extract-cv", async (req, res) => {
-  try {
-    const { text } = req.body;
-    if (!text) {
-      return res.status(400).json({ error: "text is required" });
-    }
+### CRITICAL PARSING RULES:
+1. **Section Titles vs Content**: sectionTitles should contain GENERIC headers like "Profil Professionnel", NOT actual content
+2. **Profile Field**: Extract ONLY the introductory summary/objective paragraph
+3. **Skills vs Technologies**: skills = soft skills (Leadership, Communication), technologies = technical skills (React, PHP)
+4. **No Duplication**: Each piece of information appears ONLY ONCE
+5. **Language Detection**: Use section titles in the same language as the CV content
+6. **String Formatting**: Keep each string on a SINGLE LINE
+7. **Output Format**: Return ONLY valid JSON
 
+CV TEXT to parse:
+${text}
+
+Return ONLY the JSON object:
+`;
+
+  try {
+    console.log(`📄 Attempting CV extraction (attempt ${retryCount + 1}/${RETRY_CONFIG.maxRetries + 1})`);
+    
+    const result = await primaryModel.generateContent(prompt);
+    let rawText = result.response.text().trim();
+    
+    console.log("✅ Raw response received, length:", rawText.length);
+
+    // Remove markdown code blocks
+    rawText = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+    
+    // Parse JSON
+    const jsonData = JSON.parse(rawText);
+    
+    console.log("✅ CV extraction successful!");
+    return jsonData;
+
+  } catch (error) {
+    console.error(`❌ CV extraction error (attempt ${retryCount + 1}):`, error.message);
+    
+    // Check if it's a rate limit error
+    if (isRateLimitError(error)) {
+      console.log('⏱️  Rate limit detected');
+      
+      // If we haven't exceeded max retries
+      if (retryCount < RETRY_CONFIG.maxRetries) {
+        const delay = getBackoffDelay(retryCount);
+        console.log(`⏳ Waiting ${delay}ms before retry ${retryCount + 2}...`);
+        
+        await sleep(delay);
+        
+        // Recursive retry
+        return await extractCVData(text, retryCount + 1);
+      } else {
+        console.error('❌ Max retries exceeded for rate limit');
+        throw new Error(
+          `Rate limit exceeded. Please wait a few minutes before trying again. ` +
+          `The free tier of Google Gemini API has limits on requests per minute. ` +
+          `Consider upgrading your API plan or wait before retrying.`
+        );
+      }
+    }
+    
+    // For non-rate-limit errors, throw immediately
+    throw new Error(`Failed to extract CV data: ${error.message}`);
+  }
+}
+
+// Update the /api/extract-cv endpoint to use the new function
+// Replace the existing endpoint with this:
+
+app.post('/api/extract-cv', async (req, res) => {
+  const { text } = req.body;
+
+  if (!text || typeof text !== 'string' || text.trim().length === 0) {
+    return res.status(400).json({ error: 'Invalid or empty text provided' });
+  }
+
+  try {
+    console.log('📥 Received CV extraction request, text length:', text.length);
+    
     const cvData = await extractCVData(text);
+    
     res.json(cvData);
-  } catch (err) {
-    console.error("Extract CV endpoint error:", err);
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error('Extract CV endpoint error:', error);
+    
+    // Send user-friendly error message
+    if (isRateLimitError(error)) {
+      res.status(429).json({
+        error: 'Rate limit exceeded',
+        message: 'Too many requests. Please wait a few minutes before trying again.',
+        retryAfter: 60, // Suggest waiting 60 seconds
+        details: error.message
+      });
+    } else {
+      res.status(500).json({
+        error: 'CV extraction failed',
+        message: error.message
+      });
+    }
   }
 });
+
+// Add a new endpoint to check rate limit status
+app.get('/api/rate-limit-status', async (req, res) => {
+  try {
+    // Try a minimal API call
+    const testModel = genAI.getGenerativeModel({ model: "models/gemini-2.0-flash-lite" });
+    await testModel.generateContent("Test");
+    
+    res.json({
+      status: 'ok',
+      message: 'API is responsive',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      res.status(429).json({
+        status: 'rate_limited',
+        message: 'API is currently rate limited',
+        suggestedWaitTime: 60,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      res.status(500).json({
+        status: 'error',
+        message: error.message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+});
+
+console.log('✅ Rate limit handler initialized');
+console.log(`⚙️  Retry config: max ${RETRY_CONFIG.maxRetries} retries, ${RETRY_CONFIG.baseDelay}ms base delay`);
 
 // Initialize and start server
 initCacheDir().then(() => {

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { CVData } from '../types/cv';
-import { uiTranslations, UITranslations } from '../data/uiTranslations';
-import { translationCache } from '../utils/translationCache'; // ✅ Import the new class
+import { uiTranslations } from '../data/uiTranslations';
+import { translationCache } from '../utils/translationCache';
 
 interface LanguageContextType {
   currentLanguage: string;
@@ -13,7 +13,7 @@ interface LanguageContextType {
   setIsTranslating: (value: boolean) => void;
   translationProgress: number;
   setTranslationProgress: (value: number) => void;
-  translationCache: typeof translationCache; // ✅ Use the class type
+  translationCache: typeof translationCache;
   clearTranslationCache: () => void;
 }
 
@@ -28,23 +28,30 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   // ✅ Load translated CV from localStorage on init
   const [translatedCV, setTranslatedCVState] = useState<CVData | null>(() => {
-    const saved = localStorage.getItem('translatedCV');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('translatedCV');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
   });
   
   const [isTranslating, setIsTranslating] = useState(false);
   const [translationProgress, setTranslationProgress] = useState(0);
-  
-  const [currentUITranslations, setCurrentUITranslations] = useState<UITranslations>(
-    uiTranslations[currentLanguage] || uiTranslations['Français']
-  );
 
-  useEffect(() => {
-    setCurrentUITranslations(uiTranslations[currentLanguage] || uiTranslations['Français']);
-  }, [currentLanguage]);
+  // ✅ Translation function that updates when language changes
+  const t = (key: string): string => {
+    const translations = uiTranslations[currentLanguage];
+    if (!translations) {
+      console.warn(`No translations found for language: ${currentLanguage}`);
+      return key;
+    }
+    return translations[key] || key;
+  };
 
   // ✅ Persist language to localStorage when it changes
   const setLanguage = (lang: string) => {
+    console.log(`🌍 Changing language to: ${lang}`);
     setCurrentLanguageState(lang);
     localStorage.setItem('selectedLanguage', lang);
     setTranslationProgress(0);
@@ -60,15 +67,17 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
-  const t = (key: string): string => {
-    return currentUITranslations[key] || key;
-  };
-
-  // ✅ Use the class's clear method
+  // ✅ Clear translation cache
   const clearTranslationCache = () => {
     translationCache.clear();
     setTranslatedCVState(null);
+    localStorage.removeItem('translatedCV');
   };
+
+  // ✅ Debug: Log when language changes
+  useEffect(() => {
+    console.log(`📝 Current language: ${currentLanguage}`);
+  }, [currentLanguage]);
 
   return (
     <LanguageContext.Provider
@@ -82,7 +91,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsTranslating,
         translationProgress,
         setTranslationProgress,
-        translationCache, // ✅ Pass the imported class instance
+        translationCache,
         clearTranslationCache,
       }}
     >
