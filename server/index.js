@@ -225,10 +225,12 @@ async function withRetryAndFallback(fn, retries = 5) {
 
 // Translate a single chunk
 // Translate a single chunk
-async function translateChunk(text, targetLang, model = primaryModel) {
-  const prompt = `You are a professional translation engine specializing in CVs. Translate ONLY the human-readable text values in this JSON to ${targetLang}.
 
-    CRITICAL RULES:
+async function translateChunk(text, targetLang, model) {
+  const prompt = `
+    Translate the following JSON content to ${targetLang}.
+    
+    IMPORTANT RULES:
     1. This is CV (Curriculum Vitae) data. Use appropriate professional terminology.
     2. DO NOT translate:
       - JSON keys (personalInfo, fullName, jobTitle, etc.)
@@ -242,11 +244,18 @@ async function translateChunk(text, targetLang, model = primaryModel) {
       - Company descriptions
       - Skills
       - Mission descriptions
-      - Section titles
+      - **ALL section titles in sectionTitles** - CRITICAL: These MUST be translated
     4. Preserve the EXACT JSON structure
     5. Return ONLY valid JSON - no markdown, no comments, no explanations
     6. Keep all arrays the same length
     7. Keep all special characters and formatting
+    8. CRITICAL: sectionTitles must use professional ${targetLang} terms:
+       - profile → Professional Profile / Profil Professionnel / etc.
+       - skills → Skills / Compétences / etc.
+       - technologies → Technical Environment / Environnements Techniques / etc.
+       - experiences → Professional Experience / Expériences Professionnelles / etc.
+       - certifications → Certifications / Certifications / etc.
+       - languages → Languages / Langues / etc.
 
     JSON to translate:
     ${text}
@@ -581,6 +590,141 @@ function escapeControlCharsInStrings(jsonStr) {
   return result;
 }
 
+
+// ============================================
+// ENSURE SECTION TITLES HELPER
+// ============================================
+function ensureSectionTitles(jsonData) {
+  // Detect the language of the CV based on content
+  const detectedLang = detectCVLanguage(jsonData);
+  
+  // Define default titles for each language
+  const defaultTitles = {
+    'English': {
+      profile: 'Professional Profile',
+      skills: 'Skills',
+      technologies: 'Technical Environment',
+      experiences: 'Professional Experience',
+      certifications: 'Certifications',
+      languages: 'Languages'
+    },
+    'French': {
+      profile: 'Profil Professionnel',
+      skills: 'Domaines de Compétences',
+      technologies: 'Environnements Techniques',
+      experiences: 'Expériences Professionnelles',
+      certifications: 'Certifications',
+      languages: 'Langues'
+    },
+    'Arabic': {
+      profile: 'الملف الشخصي المهني',
+      skills: 'المهارات',
+      technologies: 'البيئات التقنية',
+      experiences: 'الخبرات المهنية',
+      certifications: 'الشهادات',
+      languages: 'اللغات'
+    },
+    'Spanish': {
+      profile: 'Perfil Profesional',
+      skills: 'Habilidades',
+      technologies: 'Entorno Técnico',
+      experiences: 'Experiencia Profesional',
+      certifications: 'Certificaciones',
+      languages: 'Idiomas'
+    },
+    'German': {
+      profile: 'Berufsprofil',
+      skills: 'Fähigkeiten',
+      technologies: 'Technische Umgebung',
+      experiences: 'Berufserfahrung',
+      certifications: 'Zertifizierungen',
+      languages: 'Sprachen'
+    }
+  };
+
+  // Get the default titles for detected language (fallback to English)
+  const defaults = defaultTitles[detectedLang] || defaultTitles['English'];
+  
+  // Ensure sectionTitles exists
+  if (!jsonData.sectionTitles) {
+    jsonData.sectionTitles = {};
+  }
+  
+  // Apply defaults for any null or empty values
+  for (const key in defaults) {
+    if (!jsonData.sectionTitles[key] || jsonData.sectionTitles[key].trim() === '') {
+      jsonData.sectionTitles[key] = defaults[key];
+      console.log(`✅ Applied default ${detectedLang} title for "${key}": ${defaults[key]}`);
+    }
+  }
+  
+  return jsonData;
+}
+
+// ============================================
+// LANGUAGE DETECTION FUNCTION
+// ============================================
+function detectCVLanguage(jsonData) {
+  // Sample text from various fields to detect language
+  const sampleTexts = [];
+  
+  if (jsonData.personalInfo?.professionalTitle) {
+    sampleTexts.push(jsonData.personalInfo.professionalTitle);
+  }
+  if (jsonData.profile) {
+    sampleTexts.push(jsonData.profile.substring(0, 200)); // First 200 chars
+  }
+  if (jsonData.experiences && jsonData.experiences.length > 0) {
+    const firstExp = jsonData.experiences[0];
+    if (firstExp.jobTitle) sampleTexts.push(firstExp.jobTitle);
+    if (firstExp.missions && firstExp.missions[0]) {
+      sampleTexts.push(firstExp.missions[0]);
+    }
+  }
+  if (jsonData.sectionTitles) {
+    // Check existing section titles
+    for (const key in jsonData.sectionTitles) {
+      if (jsonData.sectionTitles[key] && typeof jsonData.sectionTitles[key] === 'string') {
+        sampleTexts.push(jsonData.sectionTitles[key]);
+      }
+    }
+  }
+  
+  const combinedText = sampleTexts.join(' ').toLowerCase();
+  
+  // Language detection patterns
+  const patterns = {
+    'French': /\b(professionnel|compétences|expériences|développeur|ingénieur|gestion|projet)\b/i,
+    'Arabic': /[\u0600-\u06FF]/,  // Arabic Unicode range
+    'Spanish': /\b(profesional|experiencia|habilidades|desarrollo|ingeniero|gestión)\b/i,
+    'German': /\b(berufserfahrung|fähigkeiten|entwickler|ingenieur|projekt)\b/i,
+    'English': /\b(professional|experience|skills|developer|engineer|management|project)\b/i
+  };
+  
+  // Score each language
+  const scores = {};
+  for (const [lang, pattern] of Object.entries(patterns)) {
+    const matches = combinedText.match(pattern);
+    scores[lang] = matches ? matches.length : 0;
+  }
+  
+  // Get language with highest score
+  let detectedLang = 'English'; // Default
+  let maxScore = 0;
+  
+  for (const [lang, score] of Object.entries(scores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      detectedLang = lang;
+    }
+  }
+  
+  console.log(`🔍 Detected CV language: ${detectedLang} (score: ${maxScore})`);
+  console.log(`   Language scores:`, scores);
+  
+  return detectedLang;
+}
+
 // Add this to your server/index.js after the existing code
 
 // ============================================
@@ -621,6 +765,7 @@ function getBackoffDelay(retryCount) {
 }
 
 // Improved extractCVData function with retry logic
+
 async function extractCVData(text, retryCount = 0) {
   const prompt = `
 You are a professional CV parser. Your task is to intelligently read the following raw CV text, **infer its sectional structure (headings, lists, paragraphs)**, and then accurately map and extract all relevant information into a valid JSON object matching the **EXACT** provided schema.
@@ -686,9 +831,13 @@ You are a professional CV parser. Your task is to intelligently read the followi
 2. **Profile Field**: Extract ONLY the introductory summary/objective paragraph
 3. **Skills vs Technologies**: skills = soft skills (Leadership, Communication), technologies = technical skills (React, PHP)
 4. **No Duplication**: Each piece of information appears ONLY ONCE
-5. **Language Detection**: Use section titles in the same language as the CV content
-6. **String Formatting**: Keep each string on a SINGLE LINE
-7. **Output Format**: Return ONLY valid JSON
+5. **Language Detection**: CRITICAL - Detect the CV's language and use section titles in that SAME language:
+   - If CV is in English → use English titles (Skills, Technical Environment, Professional Experience, etc.)
+   - If CV is in French → use French titles (Compétences, Environnements Techniques, Expériences Professionnelles, etc.)
+   - If CV is in Arabic → use Arabic titles (المهارات, البيئات التقنية, الخبرات المهنية, etc.)
+6. **ALL Section Titles are REQUIRED**: Every field in sectionTitles MUST have a value - NEVER use null or empty strings
+7. **String Formatting**: Keep each string on a SINGLE LINE
+8. **Output Format**: Return ONLY valid JSON
 
 CV TEXT to parse:
 ${text}
@@ -708,39 +857,27 @@ Return ONLY the JSON object:
     rawText = rawText.replace(/```json\s*/g, '').replace(/```\s*/g, '');
     
     // Parse JSON
-    const jsonData = JSON.parse(rawText);
+    let jsonData = JSON.parse(rawText);
+    
+    // ✅ FIX: Apply fallback titles if any are missing
+    jsonData = ensureSectionTitles(jsonData);
     
     console.log("✅ CV extraction successful!");
     return jsonData;
-
-  } catch (error) {
-    console.error(`❌ CV extraction error (attempt ${retryCount + 1}):`, error.message);
     
-    // Check if it's a rate limit error
-    if (isRateLimitError(error)) {
-      console.log('⏱️  Rate limit detected');
-      
-      // If we haven't exceeded max retries
-      if (retryCount < RETRY_CONFIG.maxRetries) {
-        const delay = getBackoffDelay(retryCount);
-        console.log(`⏳ Waiting ${delay}ms before retry ${retryCount + 2}...`);
-        
-        await sleep(delay);
-        
-        // Recursive retry
-        return await extractCVData(text, retryCount + 1);
-      } else {
-        console.error('❌ Max retries exceeded for rate limit');
-        throw new Error(
-          `Rate limit exceeded. Please wait a few minutes before trying again. ` +
-          `The free tier of Google Gemini API has limits on requests per minute. ` +
-          `Consider upgrading your API plan or wait before retrying.`
-        );
-      }
+  } catch (error) {
+    console.error(`❌ Extraction error (attempt ${retryCount + 1}):`, error.message);
+    
+    // Retry on rate limit errors
+    if (isRateLimitError(error) && retryCount < RETRY_CONFIG.maxRetries) {
+      const delay = getBackoffDelay(retryCount);
+      console.log(`⏳ Rate limit hit. Retrying in ${delay}ms...`);
+      await sleep(delay);
+      return extractCVData(text, retryCount + 1);
     }
     
-    // For non-rate-limit errors, throw immediately
-    throw new Error(`Failed to extract CV data: ${error.message}`);
+    // If all retries failed, throw error
+    throw new Error(`CV extraction failed: ${error.message}`);
   }
 }
 

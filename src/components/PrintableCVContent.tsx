@@ -28,6 +28,16 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }, [activeSection]);
 
+    // ✅ FIX: Helper to safely get section titles with fallbacks
+    const getSectionTitle = (titleKey: keyof typeof data.sectionTitles, fallback: string): string => {
+      const title = data.sectionTitles?.[titleKey];
+      if (!title || title.trim() === '' || title === 'null' || title === 'undefined') {
+        console.warn(`⚠️ Missing section title for "${titleKey}", using fallback: "${fallback}"`);
+        return fallback;
+      }
+      return title;
+    };
+
     const renderPersonalSection = () => (
       <header className="header text-center mb-8" id="preview-personal">
         {data.personalInfo.avatarUrl && (
@@ -88,7 +98,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <section id="preview-profile">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <FileText size={22} />
-            {data.sectionTitles.profile}
+            {getSectionTitle('profile', 'Professional Profile')}
           </h3>
           <div className="profile-content bg-gray-50 border-l-4 border-gray-800 pl-6 py-4 rounded-r-lg">
             <p className="text-gray-700 leading-relaxed text-justify">
@@ -105,7 +115,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <section id="preview-skills">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <Layers size={22} />
-            {data.sectionTitles.skills}
+            {getSectionTitle('skills', 'Skills')}
           </h3>
           <div className="space-y-3">
             {data.skills.map((skill, index) => (
@@ -125,7 +135,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <section id="preview-technologies">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <Code size={22} />
-            {data.sectionTitles.technologies}
+            {getSectionTitle('technologies', 'Technical Environment')}
           </h3>
           <div className="tech-categories space-y-6">
             {data.technologies.map((techCategory) => (
@@ -135,12 +145,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
                 </h4>
                 <div className="tech-items">
                   <p className="text-gray-700 leading-relaxed">
-                    {techCategory.items.split(',').map((item, itemIndex) => (
-                      <React.Fragment key={itemIndex}>
-                        {item.trim()}
-                        {itemIndex < techCategory.items.split(',').length - 1 && ', '}
-                      </React.Fragment>
-                    ))}
+                    {techCategory.items}
                   </p>
                 </div>
               </div>
@@ -153,24 +158,22 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
     const renderExperiencesSection = () => {
       if (!data.experiences || data.experiences.length === 0) return null;
       return (
-        <section id="preview-experiences" className="print:break-before-page">
+        <section id="preview-experiences">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <Briefcase size={22} />
-            {data.sectionTitles.experiences}
+            {getSectionTitle('experiences', 'Professional Experience')}
           </h3>
-          <div className="space-y-6">
+          <div className="space-y-8">
             {data.experiences.map((experience) => (
-              <div key={experience.id} className="experience-item border-l-4 border-gray-800 pl-6 relative">
-                <h4 className="job-title text-lg font-bold text-gray-800 mb-1">
-                  {experience.jobTitle}
-                </h4>
-                <p className="company-name text-gray-600 italic mb-3 font-medium">
-                  {experience.company}
-                </p>
-                <ul className="mission-list space-y-2">
-                  {experience.missions.map((mission, index) => (
-                    <li key={index} className="mission-item">
-                      {mission.startsWith('Stack :') ? (
+              <div key={experience.id} className="experience-item border-l-4 border-gray-300 pl-6">
+                <div className="mb-3">
+                  <h4 className="text-lg font-bold text-gray-800">{experience.jobTitle}</h4>
+                  <p className="text-gray-600 font-medium">{experience.company}</p>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  {experience.missions.map((mission, missionIndex) => (
+                    <li key={missionIndex}>
+                      {mission.includes(':') && mission.split(':')[0].length < 50 ? (
                         <div className="stack-info bg-gray-50 border-l-4 border-gray-300 pl-4 py-2 mb-3 rounded-r-md">
                           <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
                             {mission.split(':')[0]}:
@@ -201,7 +204,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <section id="preview-certifications">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <Award size={22} />
-            {data.sectionTitles.certifications}
+            {getSectionTitle('certifications', 'Certifications')}
           </h3>
           <div className="space-y-3">
             {data.certifications.map((cert, index) => (
@@ -224,7 +227,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <section id="preview-languages">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <LanguagesIcon size={22} />
-            {data.sectionTitles.languages}
+            {getSectionTitle('languages', 'Languages')}
           </h3>
           <div className="space-y-3">
             {data.languages.map((language, index) => (
