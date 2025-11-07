@@ -1,0 +1,448 @@
+/**
+ * Modern CV Maker - CSS Utilities Reference
+ * Quick copy-paste classes for consistent modern styling
+ */
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+/* Primary Button (Gradient) */
+.btn-primary {
+  @apply flex items-center gap-2 px-5 py-2.5 
+         bg-gradient-to-r from-blue-500 to-purple-600 
+         hover:from-blue-600 hover:to-purple-700 
+         text-white rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] 
+         font-semibold text-sm;
+}
+
+/* Secondary Button (White) */
+.btn-secondary {
+  @apply flex items-center gap-2 px-4 py-2.5 
+         bg-white border-2 border-neutral-200 hover:border-neutral-300 
+         text-neutral-700 rounded-xl shadow-sm hover:shadow-md 
+         transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] 
+         font-medium text-sm;
+}
+
+/* Success Button */
+.btn-success {
+  @apply flex items-center gap-2 px-4 py-2.5 
+         bg-gradient-to-r from-green-500 to-emerald-600 
+         hover:from-green-600 hover:to-emerald-700 
+         text-white rounded-xl shadow-md hover:shadow-lg 
+         transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] 
+         font-semibold text-sm;
+}
+
+/* Danger/Delete Button */
+.btn-danger {
+  @apply px-3 py-2 bg-red-50 hover:bg-red-500 
+         text-red-500 hover:text-white rounded-xl 
+         transition-all duration-200;
+}
+
+/* Ghost Button */
+.btn-ghost {
+  @apply px-4 py-2 text-neutral-600 hover:bg-neutral-100 
+         rounded-xl transition-all duration-200 font-medium;
+}
+
+/* ============================================
+   FORM INPUTS
+   ============================================ */
+
+/* Input Field */
+.input-modern {
+  @apply w-full px-4 py-3 
+         border-2 border-neutral-200 rounded-xl 
+         focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+         transition-all duration-200 hover:border-neutral-300 
+         bg-white placeholder-neutral-400 text-neutral-900;
+}
+
+/* Textarea */
+.textarea-modern {
+  @apply w-full px-4 py-3 
+         border-2 border-neutral-200 rounded-xl 
+         focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+         transition-all duration-200 hover:border-neutral-300 
+         bg-white resize-none placeholder-neutral-400 text-neutral-900;
+}
+
+/* Select Dropdown */
+.select-modern {
+  @apply px-4 py-2.5 
+         bg-white border-2 border-neutral-200 rounded-xl 
+         text-sm font-medium text-neutral-700 cursor-pointer 
+         hover:border-neutral-300 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+         transition-all duration-200;
+}
+
+/* Input Label */
+.label-modern {
+  @apply block text-sm font-semibold text-neutral-700 mb-2;
+}
+
+/* ============================================
+   CARDS & CONTAINERS
+   ============================================ */
+
+/* Standard Card */
+.card-modern {
+  @apply bg-gradient-to-br from-white to-neutral-50 
+         border-2 border-neutral-200 rounded-2xl p-6 
+         shadow-sm hover:shadow-md transition-all duration-200;
+}
+
+/* Elevated Card */
+.card-elevated {
+  @apply bg-white rounded-2xl shadow-lg hover:shadow-xl 
+         border border-neutral-200 transition-all duration-200;
+}
+
+/* Section Container */
+.section-container {
+  @apply space-y-5;
+}
+
+/* Section Header */
+.section-header {
+  @apply flex items-center gap-3 pb-4 border-b-2 border-neutral-200;
+}
+
+/* Section Icon Container */
+.section-icon {
+  @apply p-2.5 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg;
+}
+
+/* Section Title */
+.section-title {
+  @apply text-2xl font-bold text-neutral-900;
+}
+
+/* ============================================
+   NAVIGATION & HEADERS
+   ============================================ */
+
+/* Modern Nav Bar */
+.nav-modern {
+  @apply sticky top-0 z-50 
+         bg-white/80 backdrop-blur-xl 
+         border-b border-neutral-200/60 shadow-sm;
+}
+
+/* Logo Container */
+.logo-modern {
+  @apply relative w-11 h-11 
+         bg-gradient-to-br from-blue-500 to-purple-600 
+         rounded-xl flex items-center justify-center shadow-lg;
+}
+
+/* Logo Glow Effect */
+.logo-glow {
+  @apply absolute inset-0 
+         bg-gradient-to-br from-blue-500 to-purple-600 
+         rounded-xl blur-sm opacity-75;
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+
+/* Progress Bar Container */
+.progress-container {
+  @apply w-full bg-neutral-200 rounded-full h-2 overflow-hidden;
+}
+
+/* Progress Bar Fill (Gradient) */
+.progress-fill {
+  @apply h-full bg-gradient-to-r from-blue-500 to-purple-600 
+         rounded-full transition-all duration-500 ease-out;
+}
+
+/* Mini Progress Bar */
+.progress-mini {
+  @apply absolute bottom-0 left-0 right-0 h-0.5 
+         bg-neutral-200 rounded-b-lg overflow-hidden;
+}
+
+/* ============================================
+   SECTION NAVIGATION
+   ============================================ */
+
+/* Section Button (Active) */
+.section-btn-active {
+  @apply flex flex-col items-center gap-2 px-4 py-3.5 
+         bg-gradient-to-br from-blue-500 to-purple-600 
+         border-2 border-transparent text-white 
+         rounded-xl shadow-lg transition-all duration-200 hover:scale-[1.02];
+}
+
+/* Section Button (Inactive) */
+.section-btn-inactive {
+  @apply flex flex-col items-center gap-2 px-4 py-3.5 
+         bg-white border-2 border-neutral-200 
+         hover:border-neutral-300 text-neutral-700 
+         rounded-xl shadow-sm hover:shadow-md 
+         transition-all duration-200 hover:scale-[1.02];
+}
+
+/* ============================================
+   BACKGROUNDS
+   ============================================ */
+
+/* Main App Background */
+.bg-app {
+  @apply bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30;
+}
+
+/* Editor Background */
+.bg-editor {
+  @apply bg-gradient-to-br from-neutral-50 to-blue-50/30;
+}
+
+/* Preview Background */
+.bg-preview {
+  @apply bg-gradient-to-br from-neutral-50 to-blue-50/30;
+}
+
+/* Card Background Subtle */
+.bg-card-subtle {
+  @apply bg-gradient-to-br from-white to-neutral-50;
+}
+
+/* Upload Area Background */
+.bg-upload {
+  @apply bg-gradient-to-br from-neutral-50 to-blue-50/50;
+}
+
+/* ============================================
+   SPECIAL EFFECTS
+   ============================================ */
+
+/* Backdrop Blur Effect */
+.backdrop-modern {
+  @apply bg-white/80 backdrop-blur-xl;
+}
+
+/* Hover Scale Effect */
+.hover-scale {
+  @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+}
+
+/* Smooth Shadow Transition */
+.shadow-transition {
+  @apply shadow-sm hover:shadow-md transition-all duration-200;
+}
+
+/* Icon Hover Animation (Translate Up) */
+.icon-hover-up {
+  @apply transition-transform duration-200 group-hover:-translate-y-0.5;
+}
+
+/* Icon Hover Animation (Rotate) */
+.icon-hover-rotate {
+  @apply transition-transform duration-200 group-hover:rotate-12;
+}
+
+/* Icon Hover Animation (Scale) */
+.icon-hover-scale {
+  @apply transition-transform duration-200 group-hover:scale-110;
+}
+
+/* ============================================
+   IMAGE UPLOAD
+   ============================================ */
+
+/* Image Preview Container */
+.image-preview {
+  @apply relative w-28 h-28 rounded-2xl 
+         border-4 border-white shadow-lg overflow-hidden 
+         ring-2 ring-neutral-200;
+}
+
+/* Delete Button on Image */
+.image-delete-btn {
+  @apply absolute -top-2 -right-2 
+         bg-red-500 hover:bg-red-600 text-white 
+         rounded-full p-1.5 shadow-lg 
+         transition-all duration-200 hover:scale-110;
+}
+
+/* Upload Button */
+.upload-btn {
+  @apply flex flex-col items-center justify-center w-full gap-3 py-6 
+         bg-white rounded-xl border-2 border-dashed 
+         border-neutral-300 hover:border-blue-500 
+         hover:bg-blue-50/50 transition-all duration-200;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+
+/* Page Title */
+.text-page-title {
+  @apply text-2xl font-bold 
+         bg-gradient-to-r from-neutral-900 to-neutral-700 
+         bg-clip-text text-transparent;
+}
+
+/* Section Title */
+.text-section-title {
+  @apply text-2xl font-bold text-neutral-900;
+}
+
+/* Subsection Title */
+.text-subsection-title {
+  @apply text-lg font-bold text-neutral-900;
+}
+
+/* Label Text */
+.text-label {
+  @apply text-sm font-semibold text-neutral-700;
+}
+
+/* Body Text */
+.text-body {
+  @apply text-base text-neutral-700;
+}
+
+/* Muted Text */
+.text-muted {
+  @apply text-sm text-neutral-500 font-medium;
+}
+
+/* ============================================
+   UTILITY COMBINATIONS
+   ============================================ */
+
+/* Modern Form Group */
+.form-group-modern {
+  @apply space-y-2;
+}
+
+/* Grid Layout - Section Navigation */
+.section-nav-grid {
+  @apply grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5;
+}
+
+/* Flex Row with Gap */
+.flex-row-modern {
+  @apply flex items-center gap-2.5;
+}
+
+/* Flex Col with Gap */
+.flex-col-modern {
+  @apply flex flex-col gap-2.5;
+}
+
+/* Space Between Items */
+.space-between-modern {
+  @apply flex justify-between items-center;
+}
+
+/* ============================================
+   RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Hide on Mobile */
+.hide-mobile {
+  @apply hidden sm:inline;
+}
+
+/* Show on Mobile Only */
+.show-mobile-only {
+  @apply inline sm:hidden;
+}
+
+/* Responsive Padding */
+.padding-responsive {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+/* ============================================
+   ANIMATION KEYFRAMES (Add to global CSS)
+   ============================================ */
+
+/*
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+*/
+
+/* ============================================
+   EXAMPLES - COMPLETE COMPONENTS
+   ============================================ */
+
+/*
+<!-- Modern Primary Button -->
+<button className="btn-primary">
+  <Plus size={18} />
+  <span>Add Item</span>
+</button>
+
+<!-- Modern Input Field -->
+<div className="form-group-modern">
+  <label className="label-modern">Full Name</label>
+  <input 
+    type="text" 
+    className="input-modern" 
+    placeholder="John Doe"
+  />
+</div>
+
+<!-- Modern Card with Content -->
+<div className="card-modern space-y-4">
+  <div className="space-between-modern">
+    <h4 className="text-subsection-title">Section Title</h4>
+    <button className="btn-danger">
+      <Trash2 size={16} />
+    </button>
+  </div>
+  <p className="text-body">Content goes here...</p>
+</div>
+
+<!-- Section Navigation Button (Active) -->
+<button className="section-btn-active">
+  <div className="flex items-center gap-2">
+    <span className="text-xl">👤</span>
+    <CheckCircle2 size={14} />
+  </div>
+  <span className="text-xs font-semibold">Personal</span>
+</button>
+
+<!-- Progress Bar -->
+<div className="progress-container">
+  <div 
+    className="progress-fill" 
+    style={{ width: '75%' }}
+  />
+</div>
+*/

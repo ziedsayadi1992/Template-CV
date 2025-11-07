@@ -1,0 +1,80 @@
+{
+  "personalInfo": {
+    "fullName": "Votre Nom",
+    "professionalTitle": "Votre Titre Professionnel",
+    "avatarUrl": ""
+  },
+  "profile": "Rédigez votre résumé professionnel ici. Décrivez votre expérience, vos compétences et vos objectifs de carrière de manière convaincante...",
+  "contact": {
+    "email": "votre.email@exemple.fr",
+    "phone": "+33123456789",
+    "location": "Votre Ville, Pays",
+    "github": "github.com/votrenom",
+    "linkedin": "linkedin.com/in/votreprofil"
+  },
+  "skills": [
+    "Gestion de Projet & Leadership d'Équipe",
+    "Planification Stratégique & Analyse Business",
+    "Communication & Gestion des Parties Prenantes"
+  ],
+  "technologies": [
+    {
+      "id": "1",
+      "title": "Développement Frontend",
+      "items": "React, TypeScript, HTML5, CSS3, JavaScript"
+    },
+    {
+      "id": "2",
+      "title": "Développement Backend",
+      "items": "Node.js, Python, APIs REST, GraphQL"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "1",
+      "jobTitle": "Développeur Senior",
+      "company": "Entreprise Tech Inc.",
+      "missions": [
+        "Direction du développement d'applications web avec React et TypeScript",
+        "Collaboration avec des équipes pluridisciplinaires pour livrer des projets à temps",
+        "Mentorat de développeurs juniors et révisions de code"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "Français",
+      "flag": "🇫🇷",
+      "level": "Langue maternelle"
+    },
+    {
+      "name": "Anglais",
+      "flag": "🇬🇧",
+      "level": "Courant"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Certification Professionnelle",
+      "issuer": "Autorité de Certification"
+    }
+  ],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": "Professional Profile",
+    "skills": "Skills",
+    "technologies": "Technical Environment",
+    "experiences": "Professional Experience",
+    "certifications": "Certifications",
+    "languages": "Languages"
+  }
+}

@@ -1,5 +1,5 @@
-// src/components/CVEditor.tsx
-import { Save, RotateCcw, Eye, Edit, Plus, Trash2 } from "lucide-react";
+// Modern CVEditor with Section Progress Indicators
+import { Save, RotateCcw, Eye, Edit, Plus, Trash2, CheckCircle2, Circle } from "lucide-react";
 import type { CVData, TechnologyCategory, Experience } from "../types/cv";
 import PrintableCVContent from "./PrintableCVContent";
 import { useState, useEffect } from 'react';
@@ -27,65 +27,84 @@ const CVEditor: React.FC<CVEditorProps> = ({
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(data.personalInfo.avatarUrl || null);
   const { t } = useLanguage();
 
-  // Effect to update preview URL if data.personalInfo.avatarUrl changes
+  // Calculate section completion
+  const getSectionCompletion = (sectionId: string): number => {
+    switch (sectionId) {
+      case 'personal':
+        const personalFields = [data.personalInfo.fullName, data.personalInfo.professionalTitle];
+        const personalFilled = personalFields.filter(f => f && f.trim()).length;
+        return (personalFilled / personalFields.length) * 100;
+      
+      case 'profile':
+        return data.profile && data.profile.trim() ? 100 : 0;
+      
+      case 'contact':
+        const contactFields = [data.contact.email, data.contact.phone, data.contact.location];
+        const contactFilled = contactFields.filter(f => f && f.trim()).length;
+        return (contactFilled / contactFields.length) * 100;
+      
+      case 'skills':
+        return data.skills.length > 0 && data.skills.some(s => s.trim()) ? 100 : 0;
+      
+      case 'technologies':
+        return data.technologies.length > 0 ? 100 : 0;
+      
+      case 'experiences':
+        return data.experiences.length > 0 ? 100 : 0;
+      
+      case 'languages':
+        return data.languages.length > 0 ? 100 : 0;
+      
+      case 'certifications':
+        return data.certifications.length > 0 ? 100 : 0;
+      
+      default:
+        const customSection = data.customSections?.find(s => s.id === sectionId);
+        return customSection && customSection.blocks.some(b => b.trim()) ? 100 : 0;
+    }
+  };
+
+  // Calculate overall progress
+  const getOverallProgress = (): number => {
+    const sections = ['personal', 'profile', 'contact', 'skills', 'technologies', 'experiences'];
+    const completions = sections.map(s => getSectionCompletion(s));
+    return completions.reduce((a, b) => a + b, 0) / sections.length;
+  };
+
   useEffect(() => {
     setImagePreviewUrl(data.personalInfo.avatarUrl || null);
   }, [data.personalInfo.avatarUrl]);
 
-  // ---------------------------------------
-  // UPDATE HELPERS
-  // ---------------------------------------
-
+  // Update helpers (keeping existing logic)
   const updateField = (path: string[], value: string) => {
     const newData = { ...data };
     let current: any = newData;
-
     for (let i = 0; i < path.length - 1; i++) {
       current = current[path[i]];
     }
-
     current[path[path.length - 1]] = value;
     onUpdate(newData);
   };
 
-  // Helper to update a specific field in an array of objects
-  const updateArrayField = (
-    section: keyof CVData,
-    index: number,
-    field: string,
-    value: string
-  ) => {
+  const updateArrayField = (section: keyof CVData, index: number, field: string, value: string) => {
     const newData = { ...data };
     const array = newData[section] as any[];
-    // Ensure the item at the index exists and is an object before updating
     if (array && array[index] && typeof array[index] === 'object') {
       array[index] = { ...array[index], [field]: value };
     } else if (section === 'skills' && typeof array[index] === 'string') {
-      // Special handling for skills which are strings
       array[index] = value;
     }
     onUpdate(newData);
   };
 
-  // ---------------------------------------
-  // ITEMS ADD/REMOVE
-  // ---------------------------------------
-
+  // Item management (keeping existing logic)
   const addExperience = () => {
-    const newExp: Experience = {
-      id: Date.now().toString(),
-      jobTitle: "",
-      company: "",
-      missions: [""],
-    };
+    const newExp: Experience = { id: Date.now().toString(), jobTitle: "", company: "", missions: [""] };
     onUpdate({ ...data, experiences: [...data.experiences, newExp] });
   };
 
   const removeExperience = (index: number) => {
-    onUpdate({
-      ...data,
-      experiences: data.experiences.filter((_, i) => i !== index),
-    });
+    onUpdate({ ...data, experiences: data.experiences.filter((_, i) => i !== index) });
   };
 
   const addMission = (expIndex: number) => {
@@ -96,48 +115,30 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
   const removeMission = (expIndex: number, missionIndex: number) => {
     const newData = { ...data };
-    newData.experiences[expIndex].missions = newData.experiences[
-      expIndex
-    ].missions.filter((_, i) => i !== missionIndex);
+    newData.experiences[expIndex].missions = newData.experiences[expIndex].missions.filter((_, i) => i !== missionIndex);
     onUpdate(newData);
   };
 
-  const updateMission = (
-    expIndex: number,
-    missionIndex: number,
-    value: string
-  ) => {
+  const updateMission = (expIndex: number, missionIndex: number, value: string) => {
     const newData = { ...data };
     newData.experiences[expIndex].missions[missionIndex] = value;
     onUpdate(newData);
   };
 
   const addLanguage = () => {
-    onUpdate({
-      ...data,
-      languages: [...data.languages, { name: "", flag: "", level: "" }],
-    });
+    onUpdate({ ...data, languages: [...data.languages, { name: "", flag: "", level: "" }] });
   };
 
   const removeLanguage = (index: number) => {
-    onUpdate({
-      ...data,
-      languages: data.languages.filter((_, i) => i !== index),
-    });
+    onUpdate({ ...data, languages: data.languages.filter((_, i) => i !== index) });
   };
 
   const addCertification = () => {
-    onUpdate({
-      ...data,
-      certifications: [...data.certifications, { name: "", issuer: "" }],
-    });
+    onUpdate({ ...data, certifications: [...data.certifications, { name: "", issuer: "" }] });
   };
 
   const removeCertification = (index: number) => {
-    onUpdate({
-      ...data,
-      certifications: data.certifications.filter((_, i) => i !== index),
-    });
+    onUpdate({ ...data, certifications: data.certifications.filter((_, i) => i !== index) });
   };
 
   const addSkill = () => {
@@ -145,10 +146,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
   };
 
   const removeSkill = (index: number) => {
-    onUpdate({
-      ...data,
-      skills: data.skills.filter((_, i) => i !== index),
-    });
+    onUpdate({ ...data, skills: data.skills.filter((_, i) => i !== index) });
   };
 
   const updateSkill = (index: number, value: string) => {
@@ -157,18 +155,13 @@ const CVEditor: React.FC<CVEditorProps> = ({
     onUpdate(newData);
   };
 
-  // --- Technologies Section Handlers ---
-
   const addTechnologyCategory = () => {
     const newCategory: TechnologyCategory = { id: Date.now().toString(), title: "", items: "" };
     onUpdate({ ...data, technologies: [...data.technologies, newCategory] });
   };
 
   const removeTechnologyCategory = (index: number) => {
-    onUpdate({
-      ...data,
-      technologies: data.technologies.filter((_, i) => i !== index),
-    });
+    onUpdate({ ...data, technologies: data.technologies.filter((_, i) => i !== index) });
   };
 
   const updateTechnologyTitle = (index: number, title: string) => {
@@ -183,7 +176,6 @@ const CVEditor: React.FC<CVEditorProps> = ({
     onUpdate(newData);
   };
 
-  // --- Custom Section Handlers ---
   const addCustomSection = () => {
     const newSection = createCustomSection(t('customSection'), "");
     const newData = { ...data };
@@ -238,18 +230,15 @@ const CVEditor: React.FC<CVEditorProps> = ({
     onUpdate(newData);
   };
 
-  // --- Image Upload Handlers ---
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Check file size (5MB limit)
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      const maxSizeInBytes = 5 * 1024 * 1024;
       if (file.size > maxSizeInBytes) {
         alert(t('maxFileSize'));
-        event.target.value = ""; // Clear the input
+        event.target.value = "";
         return;
       }
-
       const reader = new FileReader();
       reader.onloadend = () => {
         const newAvatarUrl = reader.result as string;
@@ -263,16 +252,11 @@ const CVEditor: React.FC<CVEditorProps> = ({
   const handleRemoveImage = () => {
     updateField(["personalInfo", "avatarUrl"], "");
     setImagePreviewUrl(null);
-    // Clear the file input if it exists
     const fileInput = document.getElementById('avatarInput') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
     }
   };
-
-  // ---------------------------------------
-  // SECTIONS LIST
-  // ---------------------------------------
 
   const sections = [
     { id: "personal", label: t('personalInfo'), icon: "👤" },
@@ -290,476 +274,676 @@ const CVEditor: React.FC<CVEditorProps> = ({
     }))
   ];
 
-  // ---------------------------------------
-  // RETURN UI
-  // ---------------------------------------
+  const overallProgress = getOverallProgress();
 
   return (
-    <div className="h-screen flex flex-col bg-white">
-      {/* HEADER */}
-      <div className="bg-gray-800 text-white p-4 flex justify-between items-center shadow-lg">
-        <div className="flex items-center gap-3">
-          <Edit size={24} />
-          <h2 className="text-xl font-bold">{t('editor')}</h2>
-        </div>
+    <div className="h-screen flex flex-col bg-gradient-to-br from-neutral-50 to-blue-50/30">
+      {/* MODERN HEADER */}
+      <div className="bg-white/80 backdrop-blur-xl border-b border-neutral-200/60 shadow-sm">
+        <div className="px-6 py-4">
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl shadow-lg">
+                <Edit size={24} className="text-white" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-neutral-900 to-neutral-700 bg-clip-text text-transparent">
+                  {t('editor')}
+                </h2>
+                <p className="text-sm text-neutral-500 font-medium">Complete your professional CV</p>
+              </div>
+            </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={onTogglePreview}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-          >
-            {isPreviewMode ? <Edit size={18} /> : <Eye size={18} />}
-            {isPreviewMode ? t('edit') : t('preview')}
-          </button>
+            <div className="flex gap-2.5">
+              <button
+                onClick={onTogglePreview}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-neutral-200 hover:border-neutral-300 text-neutral-700 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] font-medium text-sm"
+              >
+                {isPreviewMode ? <Edit size={18} /> : <Eye size={18} />}
+                {isPreviewMode ? t('edit') : t('preview')}
+              </button>
 
-          <button
-            onClick={onReset}
-            className="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <RotateCcw size={18} />
-            {t('reset')}
-          </button>
+              <button
+                onClick={onReset}
+                className="flex items-center gap-2 px-4 py-2.5 bg-white border border-neutral-200 hover:border-red-200 text-neutral-700 hover:text-red-600 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] font-medium text-sm"
+              >
+                <RotateCcw size={18} />
+                {t('reset')}
+              </button>
 
-          <button
-            onClick={onSave}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-          >
-            <Save size={18} />
-            {t('save')}
-          </button>
+              <button
+                onClick={onSave}
+                className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] font-semibold text-sm"
+              >
+                <Save size={18} />
+                {t('save')}
+              </button>
+            </div>
+          </div>
+
+          {/* Overall Progress Bar */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-neutral-200 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${overallProgress}%` }}
+              />
+            </div>
+            <span className="text-sm font-semibold text-neutral-700 min-w-[50px] text-right">
+              {Math.round(overallProgress)}%
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* MAIN SPLIT VIEW - Responsive: stacked on mobile (<lg), side-by-side on desktop (>=lg) */}
+      {/* MAIN SPLIT VIEW */}
       <div className="flex flex-1 overflow-hidden flex-col lg:flex-row">
-
         {/* LEFT SIDE — EDITOR */}
-        <div className="w-full lg:w-2/4 overflow-y-auto p-4 lg:p-8 border-b lg:border-b-0 lg:border-r border-gray-200">
-          <div className="w-full max-w-[650px] mx-auto space-y-6">
+        <div className="w-full lg:w-2/4 overflow-y-auto bg-white border-r border-neutral-200">
+          <div className="p-6 max-w-[700px] mx-auto">
+            {/* Modern Section Navigation */}
+            <nav className="mb-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                {sections.map((section) => {
+                  const completion = getSectionCompletion(section.id);
+                  const isActive = activeSection === section.id;
+                  const isComplete = completion === 100;
 
-            <div className="flex flex-1 overflow-hidden">
-                <div className="bg-gray-50 border-r border-gray-200 w-full">
-                  <nav className="p-4 flex gap-2 overflow-x-auto whitespace-nowrap flex-wrap">
-                    {sections.map((section) => (
-                      <button
-                        key={section.id}
-                        onClick={() => setActiveSection(section.id)}
-                        className={`inline-flex items-center gap-3 min-w-[140px] text-left px-4 py-3 rounded-lg transition-colors ${
-                          activeSection === section.id
-                            ? 'bg-blue-600 text-white'
-                            : 'hover:bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        <span className="text-xl">{section.icon}</span>
-                        <span className="font-medium">{section.label}</span>
-                      </button>
-                    ))}
+                  return (
                     <button
-                      onClick={addCustomSection}
-                      className="inline-flex items-center gap-2 min-w-[140px] text-left px-4 py-3 rounded-lg transition-colors border-2 border-dashed border-gray-300 hover:border-blue-500 hover:bg-blue-50 text-gray-600 hover:text-blue-600"
+                      key={section.id}
+                      onClick={() => setActiveSection(section.id)}
+                      className={`relative group flex flex-col items-center gap-2 px-4 py-3.5 rounded-xl border-2 transition-all duration-200 hover:scale-[1.02] ${
+                        isActive
+                          ? 'bg-gradient-to-br from-blue-500 to-cyan-500 border-transparent text-white shadow-lg'
+                          : 'bg-white border-neutral-200 hover:border-neutral-300 text-neutral-700 shadow-sm hover:shadow-md'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{section.icon}</span>
+                        {isComplete && !isActive && (
+                          <CheckCircle2 size={14} className="text-green-500" />
+                        )}
+                        {!isComplete && !isActive && completion > 0 && (
+                          <Circle size={14} className="text-neutral-400" />
+                        )}
+                      </div>
+                      <span className="text-xs font-semibold text-center leading-tight">{section.label}</span>
+                      
+                      {/* Mini Progress Bar */}
+                      {completion > 0 && completion < 100 && !isActive && (
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-neutral-200 rounded-b-lg overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300"
+                            style={{ width: `${completion}%` }}
+                          />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+                
+                <button
+                  onClick={addCustomSection}
+                  className="flex flex-col items-center gap-2 px-4 py-3.5 rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 bg-white hover:bg-blue-50 text-neutral-600 hover:text-blue-600 transition-all duration-200 hover:scale-[1.02] shadow-sm"
+                >
+                  <Plus size={20} />
+                  <span className="text-xs font-semibold text-center leading-tight">{t('addCustomSection')}</span>
+                </button>
+              </div>
+            </nav>
+
+            {/* SECTION CONTENT - keeping existing content structure but with modern input styles */}
+            <div className="space-y-6">
+              {/* Personal Section */}
+              {activeSection === "personal" && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 pb-4 border-b-2 border-neutral-200">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                      <span className="text-2xl">👤</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-neutral-900">{t('personalInfo')}</h3>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                      {t('fullName')}
+                    </label>
+                    <input
+                      type="text"
+                      value={data.personalInfo.fullName}
+                      onChange={(e) => updateField(["personalInfo", "fullName"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="John Doe"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">
+                      {t('professionalTitle')}
+                    </label>
+                    <input
+                      type="text"
+                      value={data.personalInfo.professionalTitle}
+                      onChange={(e) => updateField(["personalInfo", "professionalTitle"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="Senior Software Engineer"
+                    />
+                  </div>
+
+                  {/* Image Upload - Modern Card Style */}
+                  <div className="mt-6 bg-gradient-to-br from-neutral-50 to-blue-50/50 border-2 border-dashed border-neutral-300 rounded-2xl p-6">
+                    {!imagePreviewUrl && (
+                      <button
+                        onClick={() => document.getElementById('avatarInput')?.click()}
+                        className="flex flex-col items-center justify-center w-full gap-3 py-6 bg-white rounded-xl border-2 border-dashed border-neutral-300 hover:border-blue-500 hover:bg-blue-50/50 transition-all duration-200 group"
+                      >
+                        <div className="p-3 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl group-hover:scale-110 transition-transform duration-200">
+                          <span className="text-3xl">📸</span>
+                        </div>
+                        <span className="text-sm font-semibold text-neutral-700 group-hover:text-blue-600">
+                          {t('uploadImage')}
+                        </span>
+                      </button>
+                    )}
+
+                    <div className="flex justify-between items-center">
+                      {imagePreviewUrl && (
+                        <div className="flex items-center gap-4">
+                          <div className="relative w-28 h-28 rounded-2xl border-4 border-white shadow-lg overflow-hidden ring-2 ring-neutral-200">
+                            <img
+                              src={imagePreviewUrl}
+                              alt="Profile preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              onClick={handleRemoveImage}
+                              className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 shadow-lg transition-all duration-200 hover:scale-110"
+                              aria-label={t('removeImage')}
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex-1 ml-4">
+                        <input
+                          id="avatarInput"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className={`${!imagePreviewUrl ? 'hidden' : 'block w-full text-sm text-neutral-600 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer'}`}
+                        />
+                        {imagePreviewUrl && (
+                          <p className="text-xs text-neutral-500 mt-2">{t('maxFileSize')}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Profile Section */}
+              {activeSection === "profile" && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 pb-4 border-b-2 border-neutral-200">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                      <span className="text-2xl">📝</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-neutral-900">{t('profile')}</h3>
+                  </div>
+
+                  <textarea
+                    value={data.profile}
+                    onChange={(e) => updateField(["profile"], e.target.value)}
+                    rows={10}
+                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none"
+                    placeholder="Write a compelling professional summary..."
+                  />
+                </div>
+              )}
+
+              {/* Contact Section */}
+              {activeSection === "contact" && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 pb-4 border-b-2 border-neutral-200">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                      <span className="text-2xl">📧</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-neutral-900">{t('contact')}</h3>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('email')}</label>
+                    <input
+                      type="email"
+                      value={data.contact.email}
+                      onChange={(e) => updateField(["contact", "email"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="john.doe@example.com"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('phone')}</label>
+                    <input
+                      type="tel"
+                      value={data.contact.phone}
+                      onChange={(e) => updateField(["contact", "phone"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="+1 (555) 123-4567"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('location')}</label>
+                    <input
+                      type="text"
+                      value={data.contact.location}
+                      onChange={(e) => updateField(["contact", "location"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="San Francisco, CA"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('github')}</label>
+                    <input
+                      type="text"
+                      value={data.contact.github || ''}
+                      onChange={(e) => updateField(["contact", "github"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="github.com/johndoe"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('linkedin')}</label>
+                    <input
+                      type="text"
+                      value={data.contact.linkedin || ''}
+                      onChange={(e) => updateField(["contact", "linkedin"], e.target.value)}
+                      className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder="linkedin.com/in/johndoe"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Skills Section */}
+              {activeSection === "skills" && (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                        <span className="text-2xl">⚡</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-neutral-900">{t('skills')}</h3>
+                    </div>
+                    <button
+                      onClick={addSkill}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] font-medium text-sm"
                     >
                       <Plus size={18} />
-                      <span className="font-medium">{t('addCustomSection')}</span>
+                      {t('addSkill')}
                     </button>
-                  </nav>
-                </div>
-            </div>
+                  </div>
 
-            {/* -------------------- PERSONAL -------------------- */}
-            {activeSection === "personal" && (
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                  {t('personalInfo')}
-                </h3>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('fullName')}
-                  </label>
-                  <input
-                    type="text"
-                    value={data.personalInfo.fullName}
-                    onChange={(e) =>
-                      updateField(["personalInfo", "fullName"], e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('professionalTitle')}
-                  </label>
-                  <input
-                    type="text"
-                    value={data.personalInfo.professionalTitle}
-                    onChange={(e) =>
-                      updateField(
-                        ["personalInfo", "professionalTitle"],
-                        e.target.value
-                      )
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                {/* Image Upload Section */}
-                
-                <div className="mt-4 border-2 border-gray-400 rounded-lg p-8">
-
-                 
-                  {!imagePreviewUrl && (
-                   <button
-                    onClick={() => document.getElementById('avatarInput')?.click()}
-                    className="flex justify-center items-center mx-auto my-1 gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 rounded-lg text-white font-medium transition"
-                    >
-                      
-                      <span className="text-2xl">📸</span> 
-                      {t('uploadImage')}
-                    </button>
-                  )}
-
-                  {/* Hidden Input used for selecting file */}
-
-                  <div className="flex justify-between items-center">                   
-
-                  {/* ✅ If image exists → show preview */}
-                  {imagePreviewUrl && (
-                    <div className="flex items-center gap-4 mt-6">
-
-                      <div className="relative w-24 h-24 rounded-full border-2 border-gray-100 overflow-visible">
-                        <img
-                          src={imagePreviewUrl}
-                          alt="Aperçu de la photo"
-                          className="w-full h-full rounded-full object-cover"
+                  <div className="space-y-3">
+                    {data.skills.map((skill, index) => (
+                      <div key={index} className="flex gap-2.5 group">
+                        <textarea
+                          value={skill}
+                          onChange={(e) => updateSkill(index, e.target.value)}
+                          rows={2}
+                          className="flex-1 px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none"
+                          placeholder={t('skillPlaceholder')}
                         />
-
-                        {/* Delete button */}
                         <button
-                          onClick={handleRemoveImage}
-                          className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1 shadow-lg hover:bg-red-700"
-                          aria-label={t('removeImage')}
+                          onClick={() => removeSkill(index)}
+                          className="px-3 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200 opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Technologies Section */}
+              {activeSection === "technologies" && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                        <span className="text-2xl">💻</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-neutral-900">{t('technologies')}</h3>
+                    </div>
+                    <button
+                      onClick={addTechnologyCategory}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] font-medium text-sm"
+                    >
+                      <Plus size={18} />
+                      {t('addTechCategory')}
+                    </button>
+                  </div>
+
+                  {data.technologies.map((techCategory, index) => (
+                    <div key={index} className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-2xl p-5 space-y-4 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="flex justify-between items-center gap-3">
+                        <input
+                          type="text"
+                          value={techCategory.title}
+                          onChange={(e) => updateTechnologyTitle(index, e.target.value)}
+                          className="flex-1 text-lg font-bold text-neutral-900 px-4 py-2.5 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+                          placeholder={t('categoryTitle')}
+                        />
+                        <button
+                          onClick={() => removeTechnologyCategory(index)}
+                          className="px-3 py-2.5 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+
+                      <textarea
+                        value={techCategory.items}
+                        onChange={(e) => updateTechnologyItems(index, e.target.value)}
+                        rows={3}
+                        className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none"
+                        placeholder={t('techPlaceholder')}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Experiences Section */}
+              {activeSection === "experiences" && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                        <span className="text-2xl">💼</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-neutral-900">{t('experiences')}</h3>
+                    </div>
+                    <button
+                      onClick={addExperience}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] font-medium text-sm"
+                    >
+                      <Plus size={18} />
+                      {t('addExperience')}
+                    </button>
+                  </div>
+
+                  {data.experiences.map((exp, expIndex) => (
+                    <div key={exp.id} className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-2xl p-6 space-y-4 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="flex justify-between items-start">
+                        <h4 className="text-lg font-bold text-neutral-900">
+                          {t('experience')} {expIndex + 1}
+                        </h4>
+                        <button
+                          onClick={() => removeExperience(expIndex)}
+                          className="px-3 py-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200 text-sm font-medium"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('jobTitle')}</label>
+                        <input
+                          type="text"
+                          value={exp.jobTitle}
+                          onChange={(e) => updateArrayField("experiences", expIndex, "jobTitle", e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('company')}</label>
+                        <input
+                          type="text"
+                          value={exp.company}
+                          onChange={(e) => updateArrayField("experiences", expIndex, "company", e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                        />
+                      </div>
+
+                      <div>
+                        <div className="flex justify-between items-center mb-3">
+                          <label className="text-sm font-semibold text-neutral-700">{t('missions')}</label>
+                          <button
+                            onClick={() => addMission(expIndex)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-500 text-green-600 hover:text-white rounded-lg text-xs font-semibold transition-all duration-200"
+                          >
+                            <Plus size={14} />
+                            {t('addMission')}
+                          </button>
+                        </div>
+
+                        <div className="space-y-2.5">
+                          {exp.missions.map((mission, missionIndex) => (
+                            <div key={missionIndex} className="flex gap-2.5 group">
+                              <textarea
+                                value={mission}
+                                onChange={(e) => updateMission(expIndex, missionIndex, e.target.value)}
+                                rows={2}
+                                className="flex-1 px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none text-sm"
+                                placeholder={t('missionPlaceholder')}
+                              />
+                              <button
+                                onClick={() => removeMission(expIndex, missionIndex)}
+                                className="px-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200 opacity-0 group-hover:opacity-100"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Languages Section */}
+              {activeSection === "languages" && (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                        <span className="text-2xl">🌐</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-neutral-900">{t('languages')}</h3>
+                    </div>
+                    <button
+                      onClick={addLanguage}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] font-medium text-sm"
+                    >
+                      <Plus size={18} />
+                      {t('addLanguage')}
+                    </button>
+                  </div>
+
+                  {data.languages.map((lang, index) => (
+                    <div key={index} className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-bold text-neutral-900">
+                          {t('language')} {index + 1}
+                        </h4>
+                        <button
+                          onClick={() => removeLanguage(index)}
+                          className="px-2 py-1.5 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition-all duration-200 text-xs"
                         >
                           <Trash2 size={14} />
                         </button>
                       </div>
 
+                      <div className="grid grid-cols-3 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-neutral-700 mb-1.5">{t('name')}</label>
+                          <input
+                            type="text"
+                            value={lang.name}
+                            onChange={(e) => updateArrayField("languages", index, "name", e.target.value)}
+                            className="w-full px-3 py-2.5 border-2 border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-sm"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-neutral-700 mb-1.5">{t('flag')}</label>
+                          <input
+                            type="text"
+                            value={lang.flag}
+                            onChange={(e) => updateArrayField("languages", index, "flag", e.target.value)}
+                            className="w-full px-3 py-2.5 border-2 border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-sm"
+                            placeholder="🇫🇷"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-semibold text-neutral-700 mb-1.5">{t('level')}</label>
+                          <input
+                            type="text"
+                            value={lang.level}
+                            onChange={(e) => updateArrayField("languages", index, "level", e.target.value)}
+                            className="w-full px-3 py-2.5 border-2 border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white text-sm"
+                          />
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  <div>
-                   <input id="avatarInput" 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleImageChange} 
-                    className=
-                    {`${!imagePreviewUrl ? 'hidden' : 'block pointer text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600'}`}
-                   />
-                   {imagePreviewUrl && (
-                     <p className="text-xs text-gray-500 mt-1"> {t('maxFileSize')} </p>
-                   )}
-                   </div>
-                  </div>
-
+                  ))}
                 </div>
+              )}
 
-              </div>
-            )}
-
-            {/* PROFILE */}
-            {activeSection === "profile" && (
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                  {t('profile')}
-                </h3>
-
-                <textarea
-                  value={data.profile}
-                  onChange={(e) => updateField(["profile"], e.target.value)}
-                  rows={8}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-            )}
-
-            {/* CONTACT */}
-            {activeSection === "contact" && (
-              <div className="space-y-4">
-                <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                  {t('contact')}
-                </h3>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('email')}
-                  </label>
-                  <input
-                    type="email"
-                    value={data.contact.email}
-                    onChange={(e) =>
-                      updateField(["contact", "email"], e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('phone')}
-                  </label>
-                  <input
-                    type="tel"
-                    value={data.contact.phone}
-                    onChange={(e) =>
-                      updateField(["contact", "phone"], e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('location')}
-                  </label>
-                  <input
-                    type="text"
-                    value={data.contact.location}
-                    onChange={(e) =>
-                      updateField(["contact", "location"], e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('github')}
-                  </label>
-                  <input
-                    type="text"
-                    value={data.contact.github ? data.contact.github : ''}
-                    onChange={(e) =>
-                      updateField(["contact", "github"], e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('linkedin')}
-                  </label>
-                  <input
-                    type="text"
-                    value={data.contact.linkedin ? data.contact.linkedin : ''}
-                    onChange={(e) =>
-                      updateField(["contact", "linkedin"], e.target.value)
-                    }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* SKILLS */}
-            {activeSection === "skills" && (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {t('skills')}
-                  </h3>
-                  <button
-                    onClick={addSkill}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <Plus size={18} />
-                    {t('addSkill')}
-                  </button>
-                </div>
-
-                {data.skills.map((skill, index) => (
-                  <div key={index} className="flex gap-2">
-                    <textarea
-                      value={skill}
-                      onChange={(e) => updateSkill(index, e.target.value)}
-                      rows={2}
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder={t('skillPlaceholder')}
-                    />
+              {/* Certifications Section */}
+              {activeSection === "certifications" && (
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                        <span className="text-2xl">🏆</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-neutral-900">{t('certifications')}</h3>
+                    </div>
                     <button
-                      onClick={() => removeSkill(index)}
-                      className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      onClick={addCertification}
+                      className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:scale-[1.02] font-medium text-sm"
                     >
-                      <Trash2 size={18} />
+                      <Plus size={18} />
+                      {t('addCertification')}
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
 
-            {/* TECHNOLOGIES */}
-            {activeSection === "technologies" && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {t('technologies')}
-                  </h3>
-                  <button
-                    onClick={addTechnologyCategory}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <Plus size={18} />
-                    {t('addTechCategory')}
-                  </button>
-                </div>
-
-                {data.technologies.map((techCategory, index) => (
-                  <div
-                    key={index}
-                    className="border border-gray-300 rounded-lg p-4 bg-gray-50 space-y-4"
-                  >
-                    <div className="flex justify-between items-center">
-                      <input
-                        type="text"
-                        value={techCategory.title}
-                        onChange={(e) =>
-                          updateTechnologyTitle(index, e.target.value)
-                        }
-                        className="text-lg font-semibold text-gray-800 px-2 py-1 border border-gray-300 rounded-lg flex-1"
-                        placeholder={t('categoryTitle')}
-                      />
-                      <button
-                        onClick={() => removeTechnologyCategory(index)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 ml-3"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('items')}
-                      </label>
-                      <textarea
-                        value={techCategory.items}
-                        onChange={(e) =>
-                          updateTechnologyItems(index, e.target.value)
-                        }
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                        placeholder={t('techPlaceholder')}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* EXPERIENCES */}
-            {activeSection === "experiences" && (
-              <div className="space-y-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {t('experiences')}
-                  </h3>
-                  <button
-                    onClick={addExperience}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <Plus size={18} />
-                    {t('addExperience')}
-                  </button>
-                </div>
-
-                {data.experiences.map((exp, expIndex) => (
-                  <div
-                    key={exp.id}
-                    className="border border-gray-300 rounded-lg p-6 space-y-4 bg-gray-50"
-                  >
-                    <div className="flex justify-between items-start">
-                      <h4 className="text-lg font-bold text-gray-800">
-                        {t('experience')} {expIndex + 1}
-                      </h4>
-                      <button
-                        onClick={() => removeExperience(expIndex)}
-                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('jobTitle')}
-                      </label>
-                      <input
-                        type="text"
-                        value={exp.jobTitle}
-                        onChange={(e) =>
-                          updateArrayField(
-                            "experiences",
-                            expIndex,
-                            "jobTitle",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('company')}
-                      </label>
-                      <input
-                        type="text"
-                        value={exp.company}
-                        onChange={(e) =>
-                          updateArrayField(
-                            "experiences",
-                            expIndex,
-                            "company",
-                            e.target.value
-                          )
-                        }
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-2">
-                        <label className="block text-sm font-medium text-gray-700">
-                          {t('missions')}
-                        </label>
+                  {data.certifications.map((cert, index) => (
+                    <div key={index} className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-2xl p-5 space-y-3 shadow-sm hover:shadow-md transition-all duration-200">
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-sm font-bold text-neutral-900">
+                          {t('certification')} {index + 1}
+                        </h4>
                         <button
-                          onClick={() => addMission(expIndex)}
-                          className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
+                          onClick={() => removeCertification(index)}
+                          className="px-2 py-1.5 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-lg transition-all duration-200 text-xs"
                         >
-                          <Plus size={14} />
-                          {t('addMission')}
+                          <Trash2 size={14} />
                         </button>
                       </div>
 
-                      <div className="space-y-2">
-                        {exp.missions.map((mission, missionIndex) => (
-                          <div key={missionIndex} className="flex gap-2">
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-700 mb-1.5">{t('name')}</label>
+                        <input
+                          type="text"
+                          value={cert.name}
+                          onChange={(e) => updateArrayField("certifications", index, "name", e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white text-sm"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-neutral-700 mb-1.5">{t('issuer')}</label>
+                        <input
+                          type="text"
+                          value={cert.issuer}
+                          onChange={(e) => updateArrayField("certifications", index, "issuer", e.target.value)}
+                          className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white text-sm"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Custom Sections */}
+              {data.customSections.map((customSection) =>
+                activeSection === customSection.id && (
+                  <div key={customSection.id} className="space-y-5">
+                    <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                          <span className="text-2xl">📑</span>
+                        </div>
+                        <h3 className="text-2xl font-bold text-neutral-900">{t('customSection')}</h3>
+                      </div>
+                      <button
+                        onClick={() => removeCustomSection(customSection.id)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-500 text-red-600 hover:text-white rounded-xl transition-all duration-200 font-medium text-sm"
+                      >
+                        <Trash2 size={18} />
+                        {t('removeSection')}
+                      </button>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('sectionTitle')}</label>
+                      <input
+                        type="text"
+                        value={customSection.title}
+                        onChange={(e) => updateCustomSectionTitle(customSection.id, e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                        placeholder={t('sectionPlaceholder')}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-700 mb-2">{t('subtitle')}</label>
+                      <input
+                        type="text"
+                        value={customSection.subtitle || ""}
+                        onChange={(e) => updateCustomSectionSubtitle(customSection.id, e.target.value)}
+                        className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                        placeholder={t('subtitlePlaceholder')}
+                      />
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-3">
+                        <label className="text-sm font-semibold text-neutral-700">{t('content')}</label>
+                        <button
+                          onClick={() => addCustomSectionBlock(customSection.id)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 hover:bg-green-500 text-green-600 hover:text-white rounded-lg text-xs font-semibold transition-all duration-200"
+                        >
+                          <Plus size={14} />
+                          {t('addBlock')}
+                        </button>
+                      </div>
+
+                      <div className="space-y-2.5">
+                        {customSection.blocks.map((block, blockIndex) => (
+                          <div key={blockIndex} className="flex gap-2.5 group">
                             <textarea
-                              value={mission}
-                              onChange={(e) =>
-                                updateMission(
-                                  expIndex,
-                                  missionIndex,
-                                  e.target.value
-                                )
-                              }
-                              rows={2}
-                              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                              placeholder={t('missionPlaceholder')}
+                              value={block}
+                              onChange={(e) => updateCustomSectionBlock(customSection.id, blockIndex, e.target.value)}
+                              rows={3}
+                              className="flex-1 px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none text-sm"
+                              placeholder={t('blockPlaceholder')}
                             />
                             <button
-                              onClick={() =>
-                                removeMission(expIndex, missionIndex)
-                              }
-                              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                              onClick={() => removeCustomSectionBlock(customSection.id, blockIndex)}
+                              className="px-2 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200 opacity-0 group-hover:opacity-100"
                             >
                               <Trash2 size={14} />
                             </button>
@@ -768,255 +952,20 @@ const CVEditor: React.FC<CVEditorProps> = ({
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* LANGUAGES */}
-            {activeSection === "languages" && (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">{t('languages')}</h3>
-                  <button
-                    onClick={addLanguage}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <Plus size={18} />
-                    {t('addLanguage')}
-                  </button>
-                </div>
-
-                {data.languages.map((lang, index) => (
-                  <div
-                    key={index}
-                    className="border border-gray-300 rounded-lg p-4 space-y-3 bg-gray-50"
-                  >
-                    <div className="flex justify-between items-start">
-                      <h4 className="text-sm font-bold text-gray-700">
-                        {t('language')} {index + 1}
-                      </h4>
-                      <button
-                        onClick={() => removeLanguage(index)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          {t('name')}
-                        </label>
-                        <input
-                          type="text"
-                          value={lang.name}
-                          onChange={(e) =>
-                            updateArrayField("languages", index, "name", e.target.value)
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          {t('flag')}
-                        </label>
-                        <input
-                          type="text"
-                          value={lang.flag}
-                          onChange={(e) =>
-                            updateArrayField("languages", index, "flag", e.target.value)
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                          placeholder="🇫🇷"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          {t('level')}
-                        </label>
-                        <input
-                          type="text"
-                          value={lang.level}
-                          onChange={(e) =>
-                            updateArrayField("languages", index, "level", e.target.value)
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* CERTIFICATIONS */}
-            {activeSection === "certifications" && (
-              <div className="space-y-4">
-                <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {t('certifications')}
-                  </h3>
-                  <button
-                    onClick={addCertification}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                  >
-                    <Plus size={18} />
-                    {t('addCertification')}
-                  </button>
-                </div>
-
-                {data.certifications.map((cert, index) => (
-                  <div
-                    key={index}
-                    className="border border-gray-300 rounded-lg p-4 space-y-3 bg-gray-50"
-                  >
-                    <div className="flex justify-between items-start">
-                      <h4 className="text-sm font-bold text-gray-700">
-                        {t('certification')} {index + 1}
-                      </h4>
-                      <button
-                        onClick={() => removeCertification(index)}
-                        className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          {t('name')}
-                        </label>
-                        <input
-                          type="text"
-                          value={cert.name}
-                          onChange={(e) =>
-                            updateArrayField(
-                              "certifications",
-                              index,
-                              "name",
-                              e.target.value
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">
-                          {t('issuer')}
-                        </label>
-                        <input
-                          type="text"
-                          value={cert.issuer}
-                          onChange={(e) =>
-                            updateArrayField(
-                              "certifications",
-                              index,
-                              "issuer",
-                              e.target.value
-                            )
-                          }
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* CUSTOM SECTIONS */}
-            {data.customSections.map((customSection) =>
-              activeSection === customSection.id && (
-                <div key={customSection.id} className="space-y-4">
-                  <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold text-gray-800">
-                      {t('customSection')}
-                    </h3>
-                    <button
-                      onClick={() => removeCustomSection(customSection.id)}
-                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-                    >
-                      <Trash2 size={18} />
-                      {t('removeSection')}
-                    </button>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t('sectionTitle')}
-                    </label>
-                    <input
-                      type="text"
-                      value={customSection.title}
-                      onChange={(e) => updateCustomSectionTitle(customSection.id, e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder={t('sectionPlaceholder')}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t('subtitle')}
-                    </label>
-                    <input
-                      type="text"
-                      value={customSection.subtitle || ""}
-                      onChange={(e) => updateCustomSectionSubtitle(customSection.id, e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      placeholder={t('subtitlePlaceholder')}
-                    />
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <label className="block text-sm font-medium text-gray-700">
-                        {t('content')}
-                      </label>
-                      <button
-                        onClick={() => addCustomSectionBlock(customSection.id)}
-                        className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700"
-                      >
-                        <Plus size={14} />
-                        {t('addBlock')}
-                      </button>
-                    </div>
-
-                    <div className="space-y-2">
-                      {customSection.blocks.map((block, blockIndex) => (
-                        <div key={blockIndex} className="flex gap-2">
-                          <textarea
-                            value={block}
-                            onChange={(e) => updateCustomSectionBlock(customSection.id, blockIndex, e.target.value)}
-                            rows={3}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
-                            placeholder={t('blockPlaceholder')}
-                          />
-                          <button
-                            onClick={() => removeCustomSectionBlock(customSection.id, blockIndex)}
-                            className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )
-            )}
+                )
+              )}
+            </div>
           </div>
         </div>
 
         {/* RIGHT SIDE — LIVE PREVIEW */}
-        <div className="w-full lg:w-2/4 overflow-y-auto p-4 bg-gray-50">
-          <PrintableCVContent data={data} activeSection={activeSection} />
+        <div className="w-full lg:w-2/4 overflow-y-auto bg-gradient-to-br from-neutral-50 to-blue-50/30 p-6">
+          <div className="max-w-[850px] mx-auto">
+            <div className="bg-white rounded-2xl shadow-xl border border-neutral-200 overflow-hidden">
+              <PrintableCVContent data={data} activeSection={activeSection} />
+            </div>
+          </div>
         </div>
-
       </div>
     </div>
   );

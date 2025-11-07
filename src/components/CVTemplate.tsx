@@ -1,7 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { Download, Languages, RotateCcw } from 'lucide-react';
-import { CV_DATA } from '../data/cvData';
 import PrintableCVContent from './PrintableCVContent';
 import type { CVData } from '../types/cv';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -12,22 +11,37 @@ interface CVTemplateProps {
   data?: CVData;
 }
 
-const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
+const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
   const componentRef = useRef<HTMLDivElement>(null);
-  const { currentLanguage, setLanguage, translatedCV, setTranslatedCV, t, translationCache, isTranslating, setIsTranslating } = useLanguage();
+  const { 
+    currentLanguage, 
+    setLanguage, 
+    translatedCV, 
+    setTranslatedCV, 
+    t, 
+    translationCache, 
+    isTranslating, 
+    setIsTranslating 
+  } = useLanguage();
   const { translateStream, progress } = useImprovedTranslate();
-  const [hasInitialized, setHasInitialized] = useState(false);
+  const [previousLanguage, setPreviousLanguage] = useState<string>(currentLanguage);
 
-  // ✅ FIX: Ensure data always has a fallback and proper structure
+  // ✅ FIX: Ensure data always has a fallback
   const safeData = React.useMemo(() => {
-    if (!data) return CV_DATA;
+    if (!data) {
+      console.error('❌ No data provided to CVTemplate');
+      return null;
+    }
     
     if (!data.personalInfo) {
       console.warn('⚠️ Missing personalInfo, using defaults');
       return {
-        ...CV_DATA,
         ...data,
-        personalInfo: CV_DATA.personalInfo
+        personalInfo: {
+          fullName: '',
+          professionalTitle: '',
+          avatarUrl: ''
+        }
       };
     }
     
@@ -36,32 +50,29 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
 
   const displayData = translatedCV || safeData;
 
-  // ✅ FIX: More lenient safety check with console logging
-  if (!displayData) {
-    console.error('❌ No display data available');
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Initializing CV...</p>
-          <p className="text-sm text-gray-400 mt-2">If this persists, try clearing your browser cache</p>
-        </div>
-      </div>
-    );
-  }
-
+  // ✅ FIX: Only translate when language is explicitly changed by user
   useEffect(() => {
-    if (!hasInitialized) {
-      setHasInitialized(true);
+    // Skip if this is the first render
+    if (previousLanguage === currentLanguage) {
       return;
     }
 
+    // Update previous language
+    setPreviousLanguage(currentLanguage);
+
+    // If switching back to French (original), clear translation
     if (currentLanguage === 'Français') {
       setTranslatedCV(null);
       setIsTranslating(false);
       return;
     }
 
+    // If no data, skip translation
+    if (!safeData) {
+      return;
+    }
+
+    // Check cache first
     const cached = translationCache.get(safeData, currentLanguage);
     if (cached) {
       console.log(`✅ Using cached translation for ${currentLanguage}`);
@@ -70,6 +81,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
       return;
     }
 
+    // Translate to new language
     console.log(`🌍 Translating to ${currentLanguage}...`);
     setIsTranslating(true);
     let assembledText = '';
@@ -91,17 +103,21 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
         translationCache.set(safeData, currentLanguage, result);
         setIsTranslating(false);
         console.log(`✅ Translation complete for ${currentLanguage}`);
+      },
+      (error) => {
+        console.error('Translation error:', error);
+        setIsTranslating(false);
       }
     );
 
     return () => {
       if (abort) abort();
     };
-  }, [currentLanguage, safeData, hasInitialized]);
+  }, [currentLanguage]); // Only depend on currentLanguage change
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: `${displayData.personalInfo?.fullName || 'CV'} - CV`,
+    documentTitle: `${displayData?.personalInfo?.fullName || 'CV'} - CV`,
     pageStyle: `
       @page {
         size: A4;
@@ -139,7 +155,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
   // Show loading only during translation with progress
   if (isTranslating && progress.percentage < 10) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="mt-4 text-gray-600">{t('translating')}</p>
@@ -153,8 +169,20 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
     );
   }
 
+  if (!displayData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Initializing CV...</p>
+          <p className="text-sm text-gray-400 mt-2">If this persists, try clearing your browser cache</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       {/* ✅ FIXED: Better responsive CV controls bar */}
       <div className="no-print sticky top-16 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -194,7 +222,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
               <button
                 onClick={handlePrint}
                 disabled={isTranslating}
-                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 hover:scale-105 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg shadow-md hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 hover:scale-105 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 title={t('exportPdf')}
               >
                 <Download size={16} />
@@ -212,7 +240,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                 <div 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300 ease-out"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 h-2 rounded-full transition-all duration-300 ease-out"
                   style={{ width: `${progress.percentage}%` }}
                 />
               </div>
@@ -221,10 +249,10 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data = CV_DATA }) => {
         </div>
       </div>
 
-      
+      {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-10 right-10 w-32 h-32 bg-blue-100 rounded-full opacity-20 blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-40 h-40 bg-indigo-100 rounded-full opacity-20 blur-3xl"></div>
+        <div className="absolute bottom-20 left-10 w-40 h-40 bg-cyan-100 rounded-full opacity-20 blur-3xl"></div>
       </div>
 
       {/* CV Content */}

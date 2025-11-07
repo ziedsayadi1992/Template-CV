@@ -1,0 +1,66 @@
+{
+  "personalInfo": {
+    "fullName": "Your Name",
+    "professionalTitle": "Your Title",
+    "avatarUrl": ""
+  },
+  "profile": "Your professional summary...",
+  "contact": {
+    "email": "your.email@example.com",
+    "phone": "+1234567890",
+    "location": "Your City",
+    "github": null,
+    "linkedin": null
+  },
+  "skills": [
+    "",
+    "Skill 2",
+    "Skill 3"
+  ],
+  "technologies": [
+    {
+      "id": "1",
+      "title": "Frontend",
+      "items": "React, TypeScript, HTML, CSS"
+    }
+  ],
+  "experiences": [
+    {
+      "id": "1",
+      "jobTitle": "Job Title",
+      "company": "Company Name",
+      "missions": [
+        "Mission 1",
+        "Mission 2"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "name": "English",
+      "flag": "",
+      "level": "Fluent"
+    }
+  ],
+  "certifications": [],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": "Professional Profile",
+    "skills": "Skills",
+    "technologies": "Technical Environment",
+    "experiences": "Professional Experience",
+    "certifications": "Certifications",
+    "languages": "Languages"
+  },
+  "version": 1,
+  "lastModified": "2025-11-07T19:25:15.566Z"
+}

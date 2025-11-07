@@ -173,21 +173,11 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
                 <ul className="space-y-2 text-sm">
                   {experience.missions.map((mission, missionIndex) => (
                     <li key={missionIndex}>
-                      {mission.includes(':') && mission.split(':')[0].length < 50 ? (
-                        <div className="stack-info bg-gray-50 border-l-4 border-gray-300 pl-4 py-2 mb-3 rounded-r-md">
-                          <span className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-                            {mission.split(':')[0]}:
-                          </span>
-                          <span className="text-gray-700 ml-2">
-                            {mission.split(':')[1]?.trim()}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-start gap-3">
-                          <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                          <span className="text-gray-700">{mission}</span>
-                        </div>
-                      )}
+                      {/* ✅ REMOVED: stack-info CSS styling - now all missions use simple bullet points */}
+                      <div className="flex items-start gap-3">
+                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-gray-700">{mission}</span>
+                      </div>
                     </li>
                   ))}
                 </ul>

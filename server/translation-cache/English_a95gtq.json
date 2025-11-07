@@ -1,0 +1,38 @@
+{
+  "personalInfo": {
+    "fullName": "",
+    "professionalTitle": "",
+    "avatarUrl": ""
+  },
+  "profile": "",
+  "contact": {
+    "email": "",
+    "phone": "",
+    "location": "",
+    "github": null,
+    "linkedin": null
+  },
+  "skills": [],
+  "technologies": [],
+  "experiences": [],
+  "languages": [],
+  "certifications": [],
+  "customSections": [],
+  "sectionOrder": [
+    "personal",
+    "profile",
+    "skills",
+    "technologies",
+    "experiences",
+    "certifications",
+    "languages"
+  ],
+  "sectionTitles": {
+    "profile": "Professional Profile",
+    "skills": "Skills",
+    "technologies": "Technical Environment",
+    "experiences": "Professional Experience",
+    "certifications": "Certifications",
+    "languages": "Languages"
+  }
+}
