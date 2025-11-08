@@ -15,6 +15,8 @@ interface LanguageContextType {
   setTranslationProgress: (value: number) => void;
   translationCache: typeof translationCache;
   clearTranslationCache: () => void;
+  cvSourceLanguage: string | null;
+  setCvSourceLanguage: (lang: string | null) => void;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -24,6 +26,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [currentLanguage, setCurrentLanguageState] = useState<string>(() => {
     const saved = localStorage.getItem('selectedLanguage');
     return saved || 'Français';
+  });
+  
+  // ✅ Track the source language of the CV (to avoid unnecessary translations)
+  const [cvSourceLanguage, setCvSourceLanguageState] = useState<string | null>(() => {
+    const saved = localStorage.getItem('cvSourceLanguage');
+    return saved || null;
   });
   
   // ✅ Load translated CV from localStorage on init
@@ -67,6 +75,16 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   };
 
+  // ✅ Set and persist CV source language
+  const setCvSourceLanguage = (lang: string | null) => {
+    setCvSourceLanguageState(lang);
+    if (lang) {
+      localStorage.setItem('cvSourceLanguage', lang);
+    } else {
+      localStorage.removeItem('cvSourceLanguage');
+    }
+  };
+
   // ✅ Clear translation cache
   const clearTranslationCache = () => {
     translationCache.clear();
@@ -77,7 +95,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   // ✅ Debug: Log when language changes
   useEffect(() => {
     console.log(`📝 Current language: ${currentLanguage}`);
-  }, [currentLanguage]);
+    console.log(`📝 CV Source language: ${cvSourceLanguage}`);
+  }, [currentLanguage, cvSourceLanguage]);
 
   return (
     <LanguageContext.Provider
@@ -93,6 +112,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setTranslationProgress,
         translationCache,
         clearTranslationCache,
+        cvSourceLanguage,
+        setCvSourceLanguage,
       }}
     >
       {children}

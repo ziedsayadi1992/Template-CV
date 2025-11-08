@@ -47,12 +47,12 @@ export const CV_TEMPLATE_EN: CVData = {
   languages: [
     {
       name: 'English',
-      flag: '🇺🇸',
+      flag: '',
       level: 'Native'
     },
     {
       name: 'Spanish',
-      flag: '🇪🇸',
+      flag: '',
       level: 'Intermediate'
     }
   ],
@@ -121,12 +121,12 @@ export const CV_TEMPLATE_FR: CVData = {
   languages: [
     {
       name: 'Français',
-      flag: '🇫🇷',
+      flag: '',
       level: 'Langue maternelle'
     },
     {
       name: 'Anglais',
-      flag: '🇬🇧',
+      flag: '',
       level: 'Courant'
     }
   ],
@@ -195,12 +195,12 @@ export const CV_TEMPLATE_AR: CVData = {
   languages: [
     {
       name: 'العربية',
-      flag: '🇸🇦',
+      flag: '',
       level: 'اللغة الأم'
     },
     {
       name: 'الإنجليزية',
-      flag: '🇬🇧',
+      flag: '',
       level: 'متقدم'
     }
   ],
@@ -269,12 +269,12 @@ export const CV_TEMPLATE_DE: CVData = {
   languages: [
     {
       name: 'Deutsch',
-      flag: '🇩🇪',
+      flag: '',
       level: 'Muttersprache'
     },
     {
       name: 'Englisch',
-      flag: '🇬🇧',
+      flag: '',
       level: 'Fließend'
     }
   ],
@@ -343,12 +343,12 @@ export const CV_TEMPLATE_ES: CVData = {
   languages: [
     {
       name: 'Español',
-      flag: '🇪🇸',
+      flag: '',
       level: 'Nativo'
     },
     {
       name: 'Inglés',
-      flag: '🇬🇧',
+      flag: '',
       level: 'Avanzado'
     }
   ],

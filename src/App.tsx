@@ -15,17 +15,24 @@ function App() {
   const [isProcessingPDF, setIsProcessingPDF] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { cvData, updateCVData, saveCVData, resetCVData, createNewCV, loadCVData, hasUnsavedChanges } = useCVData();
-  const { t, translatedCV, setTranslatedCV, currentLanguage } = useLanguage();
+  const { t, translatedCV, setTranslatedCV, currentLanguage, setCvSourceLanguage, cvSourceLanguage } = useLanguage();
 
   const displayData = translatedCV || cvData;
 
-  
+  // ✅ NEW: Handle template updates from CVTemplate
+  const handleTemplateUpdate = (newData: typeof cvData) => {
+    console.log('📝 Template updated by CVTemplate component');
+    loadCVData(newData);
+    // Don't clear cvSourceLanguage here - CVTemplate already handles it
+  };
 
-  // Clear translation cache when CV data changes
+  // Clear translation cache when CV data changes (only if user edits)
   const handleCVUpdate = (newData: typeof cvData) => {
     updateCVData(newData);
+    // Clear translation cache and mark as user-edited
     translationCache.clear();
     setTranslatedCV(null);
+    setCvSourceLanguage(null); // CV is now user-modified
   };
 
   const handleSave = () => {
@@ -40,6 +47,8 @@ function App() {
   const handleReset = () => {
     if (confirm(t('reset') + '?')) {
       resetCVData();
+      setCvSourceLanguage(null);
+      setTranslatedCV(null);
       alert(t('reset') + ' ✓');
     }
   };
@@ -54,15 +63,25 @@ function App() {
     }
   };
 
-  const handleNewCV = async () => {
+  const handleNewCV = () => {
     if (confirm(t('newCv') + '?')) {
-      // Clear any translated CV
-      setTranslatedCV(null);
-      // Import and load template based on current language
-      const { getCVTemplate } = await import('./data/cvTemplates');
+      // Get template in the currently selected language
       const template = getCVTemplate(currentLanguage);
+      
+      // Load the template
       loadCVData(template);
+      
+      // Mark the CV as coming from a template in this language
+      setCvSourceLanguage(currentLanguage);
+      
+      // Clear any existing translations
+      setTranslatedCV(null);
+      translationCache.clear();
+      
+      // Switch to edit mode
       setIsEditMode(true);
+      
+      console.log(`✅ Loaded ${currentLanguage} template`);
     }
   };
 
@@ -79,6 +98,11 @@ function App() {
       setIsProcessingPDF(true);
       const extractedData = await processPDFToCV(file);
       loadCVData(extractedData);
+      
+      // Mark as PDF source (no source language)
+      setCvSourceLanguage(null);
+      setTranslatedCV(null);
+      
       setIsEditMode(true);
       alert('PDF extracted successfully!');
     } catch (error) {
@@ -174,8 +198,11 @@ function App() {
             </div>
           </nav>
 
-          {/* CV Template */}
-          <CVTemplate data={cvData} />
+          {/* CV Template - ✅ NOW WITH CALLBACK */}
+          <CVTemplate 
+            data={cvData} 
+            onUpdateData={handleTemplateUpdate}
+          />
         </div>
       )}
     </div>

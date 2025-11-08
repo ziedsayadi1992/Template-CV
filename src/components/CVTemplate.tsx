@@ -1,17 +1,19 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useReactToPrint } from 'react-to-print';
 import { Download, Languages, RotateCcw } from 'lucide-react';
+import { useReactToPrint } from 'react-to-print';
 import PrintableCVContent from './PrintableCVContent';
 import type { CVData } from '../types/cv';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useImprovedTranslate } from '../hooks/useImprovedTranslate';
 import { rebuildJSON } from '../utils/chunkHelpers';
+import { getCVTemplate } from '../data/cvTemplates';
 
 interface CVTemplateProps {
   data?: CVData;
+  onUpdateData?: (data: CVData) => void; // Add callback to update parent data
 }
 
-const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
+const CVTemplate: React.FC<CVTemplateProps> = ({ data, onUpdateData }) => {
   const componentRef = useRef<HTMLDivElement>(null);
   const { 
     currentLanguage, 
@@ -21,7 +23,9 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
     t, 
     translationCache, 
     isTranslating, 
-    setIsTranslating 
+    setIsTranslating,
+    cvSourceLanguage,
+    setCvSourceLanguage,
   } = useLanguage();
   const { translateStream, progress } = useImprovedTranslate();
   const [previousLanguage, setPreviousLanguage] = useState<string>(currentLanguage);
@@ -50,7 +54,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
 
   const displayData = translatedCV || safeData;
 
-  // ✅ FIX: Only translate when language is explicitly changed by user
+  // ✅ NEW FIX: Handle template-to-template switching
   useEffect(() => {
     // Skip if this is the first render
     if (previousLanguage === currentLanguage) {
@@ -60,17 +64,39 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
     // Update previous language
     setPreviousLanguage(currentLanguage);
 
-    // If switching back to French (original), clear translation
-    if (currentLanguage === 'Français') {
-      setTranslatedCV(null);
-      setIsTranslating(false);
-      return;
-    }
-
-    // If no data, skip translation
+    // If no data, skip
     if (!safeData) {
       return;
     }
+
+    console.log(`🔄 Language changed from ${previousLanguage} to ${currentLanguage}`);
+    console.log(`📝 Current cvSourceLanguage: ${cvSourceLanguage}`);
+
+    // ✅ NEW: If CV is from a template, load new template instead of translating
+    if (cvSourceLanguage !== null) {
+      console.log(`✅ CV is from ${cvSourceLanguage} template, loading ${currentLanguage} template instead of translating`);
+      
+      // Load the template for the target language
+      const newTemplate = getCVTemplate(currentLanguage);
+      
+      // Update the CV data with the new template
+      if (onUpdateData) {
+        onUpdateData(newTemplate);
+      }
+      
+      // Update source language to the new template language
+      setCvSourceLanguage(currentLanguage);
+      
+      // Clear any translated CV
+      setTranslatedCV(null);
+      setIsTranslating(false);
+      
+      console.log(`✅ Loaded ${currentLanguage} template directly`);
+      return;
+    }
+
+    // ✅ If CV is user-modified (cvSourceLanguage === null), then translate
+    console.log(`🌍 CV is user-modified, translating to ${currentLanguage}...`);
 
     // Check cache first
     const cached = translationCache.get(safeData, currentLanguage);
@@ -81,8 +107,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
       return;
     }
 
-    // Translate to new language
-    console.log(`🌍 Translating to ${currentLanguage}...`);
+    // Translate the user-modified CV
     setIsTranslating(true);
     let assembledText = '';
 
@@ -113,7 +138,7 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
     return () => {
       if (abort) abort();
     };
-  }, [currentLanguage]); // Only depend on currentLanguage change
+  }, [currentLanguage, cvSourceLanguage]); // ✅ Dependencies
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
@@ -202,12 +227,18 @@ const CVTemplate: React.FC<CVTemplateProps> = ({ data }) => {
                 <option value="German">Deutsch</option>
                 <option value="Spanish">Español</option>
               </select>
+              {/* Show indicator if CV is from template */}
+              {cvSourceLanguage !== null && (
+                <span className="text-xs text-green-600 font-medium">
+                  ✓ Template
+                </span>
+              )}
             </div>
 
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
               {/* Reset Language Button (visible only when translated) */}
-              {currentLanguage !== 'Français' && (
+              {currentLanguage !== 'Français' && translatedCV && (
                 <button
                   onClick={handleResetLanguage}
                   disabled={isTranslating}

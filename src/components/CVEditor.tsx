@@ -260,8 +260,8 @@ const CVEditor: React.FC<CVEditorProps> = ({
 
   const sections = [
     { id: "personal", label: t('personalInfo'), icon: "👤" },
-    { id: "profile", label: t('profile'), icon: "📝" },
     { id: "contact", label: t('contact'), icon: "📧" },
+    { id: "profile", label: t('profile'), icon: "📝" },
     { id: "skills", label: t('skills'), icon: "⚡" },
     { id: "technologies", label: t('technologies'), icon: "💻" },
     { id: "experiences", label: t('experiences'), icon: "💼" },
@@ -483,26 +483,6 @@ const CVEditor: React.FC<CVEditorProps> = ({
                 </div>
               )}
 
-              {/* Profile Section */}
-              {activeSection === "profile" && (
-                <div className="space-y-5">
-                  <div className="flex items-center gap-3 pb-4 border-b-2 border-neutral-200">
-                    <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
-                      <span className="text-2xl">📝</span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-neutral-900">{t('profile')}</h3>
-                  </div>
-
-                  <textarea
-                    value={data.profile}
-                    onChange={(e) => updateField(["profile"], e.target.value)}
-                    rows={10}
-                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none"
-                    placeholder="Write a compelling professional summary..."
-                  />
-                </div>
-              )}
-
               {/* Contact Section */}
               {activeSection === "contact" && (
                 <div className="space-y-5">
@@ -567,6 +547,26 @@ const CVEditor: React.FC<CVEditorProps> = ({
                       placeholder="linkedin.com/in/johndoe"
                     />
                   </div>
+                </div>
+              )}
+
+              {/* Profile Section */}
+              {activeSection === "profile" && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-3 pb-4 border-b-2 border-neutral-200">
+                    <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
+                      <span className="text-2xl">📝</span>
+                    </div>
+                    <h3 className="text-2xl font-bold text-neutral-900">{t('profile')}</h3>
+                  </div>
+
+                  <textarea
+                    value={data.profile}
+                    onChange={(e) => updateField(["profile"], e.target.value)}
+                    rows={10}
+                    className="w-full px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white resize-none"
+                    placeholder="Write a compelling professional summary..."
+                  />
                 </div>
               )}
 
