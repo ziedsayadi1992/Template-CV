@@ -1,88 +1,11 @@
+// ✅ UPDATED FILE: Added technologiesTipsTitle and experienceTipsTitle translations
+// These titles are used for green tip boxes in Technologies and Experiences sections
+
 export interface UITranslations {
   [key: string]: string;
 }
 
 export const uiTranslations: { [lang: string]: UITranslations } = {
-  Français: {
-    // Navigation buttons
-    edit: "Éditer",
-    save: "Sauvegarder",
-    reset: "Réinitialiser",
-    uploadPdf: "Importer PDF",
-    newCv: "Nouveau CV",
-    selectLanguage: "Langue",
-    preview: "Aperçu",
-    exportPdf: "PDF",
-    
-    // Sections
-    editor: "Éditeur de CV",
-    personalInfo: "Informations Personnelles",
-    profile: "Profil Professionnel",
-    contact: "Contact",
-    skills: "Compétences",
-    technologies: "Technologies",
-    experiences: "Expériences",
-    languages: "Langues",
-    certifications: "Certifications",
-    
-    // Actions
-    addSkill: "Ajouter",
-    addExperience: "Ajouter",
-    addLanguage: "Ajouter",
-    addCertification: "Ajouter",
-    addTechCategory: "Ajouter Catégorie",
-    addMission: "Mission",
-    
-    // Fields
-    fullName: "Nom Complet",
-    professionalTitle: "Titre Professionnel",
-    email: "Email",
-    phone: "Téléphone",
-    location: "Localisation",
-    github: "GitHub",
-    linkedin: "LinkedIn",
-    jobTitle: "Titre du Poste",
-    company: "Entreprise",
-    missions: "Missions",
-    name: "Nom",
-    flag: "Drapeau",
-    level: "Niveau",
-    issuer: "Organisme",
-    categoryTitle: "Titre de la catégorie",
-    items: "Éléments (séparés par des virgules)",
-    
-    // Image upload
-    uploadImage: "Importer votre photo de profil",
-    maxFileSize: "Max 5 Mo. Formats acceptés : JPG, PNG, GIF.",
-    removeImage: "Supprimer la photo",
-    
-    // Custom sections
-    customSection: "Section Personnalisée",
-    addCustomSection: "Section Personnalisée",
-    sectionTitle: "Titre de la Section",
-    subtitle: "Sous-titre (optionnel)",
-    content: "Contenu",
-    addBlock: "Bloc",
-    removeSection: "Supprimer Section",
-    
-    // Placeholders
-    skillPlaceholder: "Compétence",
-    missionPlaceholder: "Mission ou Stack",
-    techPlaceholder: "Ex: PHP 7, JavaScript, TypeScript",
-    itemsPlaceholder: "Éléments (séparés par des virgules)",
-    sectionPlaceholder: "Ex: Projets, Publications, Prix...",
-    subtitlePlaceholder: "Sous-titre optionnel",
-    blockPlaceholder: "Contenu du bloc",
-    
-    // Status
-    translating: "Traduction en cours...",
-    
-    // Dynamic labels
-    experience: "Expérience",
-    language: "Langue",
-    certification: "Certification",
-  },
-  
   English: {
     // Navigation buttons
     edit: "Edit",
@@ -104,6 +27,8 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     experiences: "Experiences",
     languages: "Languages",
     certifications: "Certifications",
+    customSections: "Custom Sections",
+    sectionTitles: "Section Titles",
     
     // Actions
     addSkill: "Add",
@@ -112,6 +37,9 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     addCertification: "Add",
     addTechCategory: "Add Category",
     addMission: "Mission",
+    addField: "Add Field",
+    addSection: "Add Section",
+    addBlock: "Block",
     
     // Fields
     fullName: "Full Name",
@@ -130,20 +58,15 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     issuer: "Issuer",
     categoryTitle: "Category Title",
     items: "Items (comma separated)",
+    sectionTitle: "Section Title",
+    subtitle: "Subtitle (optional)",
+    content: "Content",
+    removeSection: "Remove Section",
     
     // Image upload
     uploadImage: "Upload your profile picture",
     maxFileSize: "Max 5 MB. Accepted formats: JPG, PNG, GIF.",
     removeImage: "Remove photo",
-    
-    // Custom sections
-    customSection: "Custom Section",
-    addCustomSection: "Custom Section",
-    sectionTitle: "Section Title",
-    subtitle: "Subtitle (optional)",
-    content: "Content",
-    addBlock: "Block",
-    removeSection: "Remove Section",
     
     // Placeholders
     skillPlaceholder: "Skill",
@@ -153,6 +76,27 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     sectionPlaceholder: "Ex: Projects, Publications, Awards...",
     subtitlePlaceholder: "Optional subtitle",
     blockPlaceholder: "Block content",
+    certificationName: "Certification name",
+    certificationIssuer: "Issuing organization",
+    techCategoryTitle: "Category title",
+    techItemsPlaceholder: "Technology items",
+    
+    // Empty states
+    noContactFields: "No contact fields yet",
+    noContactFieldsHint: "Click \"Add Field\" to add your contact information",
+    noSkills: "No skills added yet",
+    noSkillsHint: "Click \"Add Skill\" to get started.",
+    noTechCategories: "No technology categories yet",
+    noTechCategoriesHint: "Click \"Add Category\" to get started.",
+    noExperiences: "No experiences added yet",
+    noExperiencesHint: "Click \"Add Experience\" to get started.",
+    noCertifications: "No certifications added yet",
+    noCertificationsHint: "Click \"Add Certification\" to get started.",
+    noLanguages: "No languages added yet",
+    noLanguagesHint: "Click \"Add Language\" to get started.",
+    noCustomSections: "No custom sections yet",
+    noCustomSectionsHint: "Add custom sections to showcase your projects, awards, publications, volunteer work, or any other information that makes you stand out.",
+    createFirstSection: "Create Your First Section",
     
     // Status
     translating: "Translating...",
@@ -161,245 +105,255 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     experience: "Experience",
     language: "Language",
     certification: "Certification",
+    customSection: "Custom Section",
+    
+    // Tips and instructions
+    photoTipsTitle: "Professional Photo Tips",
+    photoTip1: "Use a high-quality, recent photo",
+    photoTip2: "Professional attire recommended",
+    photoTip3: "Neutral background works best",
+    photoTip4: "Smile naturally and look at the camera",
+    
+    contactTipsTitle: "Contact Information Tips",
+    contactTip1: "Include only professional contact methods",
+    contactTip2: "Ensure email address is professional",
+    contactTip3: "Add links to LinkedIn and relevant portfolios",
+    contactTip4: "Keep phone number format consistent",
+    
+    profileTipsTitle: "Professional Profile Tips",
+    profileTip1: "Keep it concise (3-5 sentences)",
+    profileTip2: "Highlight your key strengths and expertise",
+    profileTip3: "Include years of experience",
+    profileTip4: "Mention your career goals or specializations",
+
+    profileSummary: "Professional Profile Description",
+    
+    skillsTipsTitle: "Skills Section Tips",
+    skillsTip1: "List skills relevant to your target position",
+    skillsTip2: "Include both hard and soft skills",
+    skillsTip3: "Prioritize most important skills first",
+    skillsTip4: "Be specific and honest about your abilities",
+    
+    // ✅ ADDED: Technologies Tips Title
+    technologiesTipsTitle: "Technologies Tips",
+    technologiesTip1: "Group technologies by category (Frontend, Backend, etc.)",
+    technologiesTip2: "Include version numbers for specificity",
+    technologiesTip3: "List technologies you're actively using",
+    technologiesTip4: "Keep the list updated with current tech",
+    
+    // ✅ ADDED: Experience Tips Title
+    experienceTipsTitle: "Professional Experience Tips",
+    experienceTip1: "Start with most recent position",
+    experienceTip2: "Use action verbs to describe achievements",
+    experienceTip3: "Quantify results when possible (%, $, time saved)",
+    experienceTip4: "Focus on relevant responsibilities",
+    
+    certificationsTipsTitle: "Certifications Tips",
+    certificationsTip1: "Include relevant professional certifications",
+    certificationsTip2: "Add issuing organization for credibility",
+    certificationsTip3: "Prioritize industry-recognized certifications",
+    certificationsTip4: "Keep expired certifications updated",
+    
+    languagesTipsTitle: "Languages Tips",
+    languagesTip1: "Be honest about your proficiency level",
+    languagesTip2: "Include native language(s)",
+    languagesTip3: "Mention any language certifications",
+    languagesTip4: "Prioritize languages relevant to the job",
+    
+    customSectionsTipsTitle: "Popular Custom Sections",
+    customSectionsTip1: "Projects: Showcase personal or professional projects",
+    customSectionsTip2: "Publications: List research papers or articles",
+    customSectionsTip3: "Awards & Honors: Highlight achievements and recognition",
+    customSectionsTip4: "Volunteer Work: Demonstrate community involvement",
+    customSectionsTip5: "Conferences: Speaking engagements or attendance",
+    
+    // About texts
+    customSectionsAboutTitle: "About Custom Sections",
+    customSectionsAbout: "Each custom section has its own title (main heading) and optional subtitle (description). These titles appear directly in your CV, so make them descriptive and professional.",
+  
+    // Dynamic UI elements Titles
+    editableSectionTitle: "Section Title",
+    editableSectionTitleHint: "This title will appear in your CV above this section",
+    editableSectionTag: "Appears in CV",
+
+    charactersCount: "characters",
   },
   
-  Arabic: {
+  Français: {
     // Navigation buttons
-    edit: "تحرير",
-    save: "حفظ",
-    reset: "إعادة تعيين",
-    uploadPdf: "استيراد PDF",
-    newCv: "سيرة ذاتية جديدة",
-    selectLanguage: "اللغة",
-    preview: "معاينة",
+    edit: "Éditer",
+    save: "Sauvegarder",
+    reset: "Réinitialiser",
+    uploadPdf: "Importer PDF",
+    newCv: "Nouveau CV",
+    selectLanguage: "Langue",
+    preview: "Aperçu",
     exportPdf: "PDF",
     
     // Sections
-    editor: "محرر السيرة الذاتية",
-    personalInfo: "المعلومات الشخصية",
-    profile: "الملف المهني",
-    contact: "اتصال",
-    skills: "المهارات",
-    technologies: "التقنيات",
-    experiences: "الخبرات",
-    languages: "اللغات",
-    certifications: "الشهادات",
+    editor: "Éditeur de CV",
+    personalInfo: "Informations Personnelles",
+    profile: "Profil Professionnel",
+    contact: "Contact",
+    skills: "Compétences",
+    technologies: "Technologies",
+    experiences: "Expériences",
+    languages: "Langues",
+    certifications: "Certifications",
+    customSections: "Sections Personnalisées",
+    sectionTitles: "Titres des Sections",
     
     // Actions
-    addSkill: "إضافة",
-    addExperience: "إضافة",
-    addLanguage: "إضافة",
-    addCertification: "إضافة",
-    addTechCategory: "إضافة فئة",
-    addMission: "مهمة",
-    
-    // Fields
-    fullName: "الاسم الكامل",
-    professionalTitle: "المسمى الوظيفي",
-    email: "البريد الإلكتروني",
-    phone: "الهاتف",
-    location: "الموقع",
-    github: "GitHub",
-    linkedin: "LinkedIn",
-    jobTitle: "المسمى الوظيفي",
-    company: "الشركة",
-    missions: "المهام",
-    name: "الاسم",
-    flag: "العلم",
-    level: "المستوى",
-    issuer: "الجهة المصدرة",
-    categoryTitle: "عنوان الفئة",
-    items: "العناصر (مفصولة بفواصل)",
-    
-    // Image upload
-    uploadImage: "تحميل صورتك الشخصية",
-    maxFileSize: "الحد الأقصى 5 ميجابايت. الصيغ المقبولة: JPG، PNG، GIF.",
-    removeImage: "إزالة الصورة",
-    
-    // Custom sections
-    customSection: "قسم مخصص",
-    addCustomSection: "قسم مخصص",
-    sectionTitle: "عنوان القسم",
-    subtitle: "عنوان فرعي (اختياري)",
-    content: "المحتوى",
-    addBlock: "كتلة",
-    removeSection: "حذف القسم",
-    
-    // Placeholders
-    skillPlaceholder: "مهارة",
-    missionPlaceholder: "مهمة أو مجموعة تقنيات",
-    techPlaceholder: "مثال: PHP 7, JavaScript, TypeScript",
-    itemsPlaceholder: "العناصر (مفصولة بفواصل)",
-    sectionPlaceholder: "مثال: المشاريع، المنشورات، الجوائز...",
-    subtitlePlaceholder: "عنوان فرعي اختياري",
-    blockPlaceholder: "محتوى الكتلة",
-    
-    // Status
-    translating: "جارٍ الترجمة...",
-    
-    // Dynamic labels
-    experience: "خبرة",
-    language: "لغة",
-    certification: "شهادة",
-  },
-  
-  German: {
-    // Navigation buttons
-    edit: "Bearbeiten",
-    save: "Speichern",
-    reset: "Zurücksetzen",
-    uploadPdf: "PDF importieren",
-    newCv: "Neuer Lebenslauf",
-    selectLanguage: "Sprache",
-    preview: "Vorschau",
-    exportPdf: "PDF",
-    
-    // Sections
-    editor: "Lebenslauf-Editor",
-    personalInfo: "Persönliche Informationen",
-    profile: "Berufsprofil",
-    contact: "Kontakt",
-    skills: "Fähigkeiten",
-    technologies: "Technologien",
-    experiences: "Erfahrungen",
-    languages: "Sprachen",
-    certifications: "Zertifizierungen",
-    
-    // Actions
-    addSkill: "Hinzufügen",
-    addExperience: "Hinzufügen",
-    addLanguage: "Hinzufügen",
-    addCertification: "Hinzufügen",
-    addTechCategory: "Kategorie hinzufügen",
+    addSkill: "Ajouter",
+    addExperience: "Ajouter",
+    addLanguage: "Ajouter",
+    addCertification: "Ajouter",
+    addTechCategory: "Ajouter Catégorie",
     addMission: "Mission",
+    addField: "Ajouter Champ",
+    addSection: "Ajouter Section",
+    addBlock: "Bloc",
     
     // Fields
-    fullName: "Vollständiger Name",
-    professionalTitle: "Berufsbezeichnung",
-    email: "E-Mail",
-    phone: "Telefon",
-    location: "Standort",
+    fullName: "Nom Complet",
+    professionalTitle: "Titre Professionnel",
+    email: "Email",
+    phone: "Téléphone",
+    location: "Localisation",
     github: "GitHub",
     linkedin: "LinkedIn",
-    jobTitle: "Stellenbezeichnung",
-    company: "Unternehmen",
-    missions: "Aufgaben",
-    name: "Name",
-    flag: "Flagge",
+    jobTitle: "Titre du Poste",
+    company: "Entreprise",
+    missions: "Missions",
+    name: "Nom",
+    flag: "Drapeau",
     level: "Niveau",
-    issuer: "Aussteller",
-    categoryTitle: "Kategorietitel",
-    items: "Elemente (kommagetrennt)",
+    issuer: "Organisme",
+    categoryTitle: "Titre de la catégorie",
+    items: "Éléments (séparés par des virgules)",
+    sectionTitle: "Titre de la Section",
+    subtitle: "Sous-titre (optionnel)",
+    content: "Contenu",
+    removeSection: "Supprimer Section",
     
     // Image upload
-    uploadImage: "Profilbild hochladen",
-    maxFileSize: "Max. 5 MB. Akzeptierte Formate: JPG, PNG, GIF.",
-    removeImage: "Foto entfernen",
-    
-    // Custom sections
-    customSection: "Benutzerdefinierter Abschnitt",
-    addCustomSection: "Benutzerdefinierter Abschnitt",
-    sectionTitle: "Abschnittstitel",
-    subtitle: "Untertitel (optional)",
-    content: "Inhalt",
-    addBlock: "Block",
-    removeSection: "Abschnitt entfernen",
+    uploadImage: "Importer votre photo de profil",
+    maxFileSize: "Max 5 Mo. Formats acceptés : JPG, PNG, GIF.",
+    removeImage: "Supprimer la photo",
     
     // Placeholders
-    skillPlaceholder: "Fähigkeit",
-    missionPlaceholder: "Mission oder Stack",
-    techPlaceholder: "Bsp: PHP 7, JavaScript, TypeScript",
-    itemsPlaceholder: "Elemente (durch Kommas getrennt)",
-    sectionPlaceholder: "Bsp: Projekte, Publikationen, Auszeichnungen...",
-    subtitlePlaceholder: "Optionaler Untertitel",
-    blockPlaceholder: "Blockinhalt",
+    skillPlaceholder: "Compétence",
+    missionPlaceholder: "Mission ou Stack",
+    techPlaceholder: "Ex: PHP 7, JavaScript, TypeScript",
+    itemsPlaceholder: "Éléments (séparés par des virgules)",
+    sectionPlaceholder: "Ex: Projets, Publications, Prix...",
+    subtitlePlaceholder: "Sous-titre optionnel",
+    blockPlaceholder: "Contenu du bloc",
+    certificationName: "Nom de la certification",
+    certificationIssuer: "Organisme émetteur",
+    techCategoryTitle: "Titre de la catégorie",
+    techItemsPlaceholder: "Éléments technologiques",
+    
+    // Empty states
+    noContactFields: "Aucun champ de contact",
+    noContactFieldsHint: "Cliquez sur \"Ajouter Champ\" pour ajouter vos informations de contact",
+    noSkills: "Aucune compétence ajoutée",
+    noSkillsHint: "Cliquez sur \"Ajouter\" pour commencer.",
+    noTechCategories: "Aucune catégorie technologique",
+    noTechCategoriesHint: "Cliquez sur \"Ajouter Catégorie\" pour commencer.",
+    noExperiences: "Aucune expérience ajoutée",
+    noExperiencesHint: "Cliquez sur \"Ajouter\" pour commencer.",
+    noCertifications: "Aucune certification ajoutée",
+    noCertificationsHint: "Cliquez sur \"Ajouter\" pour commencer.",
+    noLanguages: "Aucune langue ajoutée",
+    noLanguagesHint: "Cliquez sur \"Ajouter\" pour commencer.",
+    noCustomSections: "Aucune section personnalisée",
+    noCustomSectionsHint: "Ajoutez des sections personnalisées pour présenter vos projets, récompenses, publications, bénévolat ou toute autre information qui vous distingue.",
+    createFirstSection: "Créez votre première section",
     
     // Status
-    translating: "Wird übersetzt...",
+    translating: "Traduction en cours...",
     
     // Dynamic labels
-    experience: "Erfahrung",
-    language: "Sprache",
-    certification: "Zertifizierung",
-  },
+    experience: "Expérience",
+    language: "Langue",
+    certification: "Certification",
+    customSection: "Section Personnalisée",
+    
+    // Tips and instructions
+    photoTipsTitle: "Conseils pour la Photo Professionnelle",
+    photoTip1: "Utilisez une photo récente de haute qualité",
+    photoTip2: "Tenue professionnelle recommandée",
+    photoTip3: "Un arrière-plan neutre fonctionne mieux",
+    photoTip4: "Souriez naturellement et regardez l'appareil photo",
+    
+    contactTipsTitle: "Conseils pour les Informations de Contact",
+    contactTip1: "N'incluez que des moyens de contact professionnels",
+    contactTip2: "Assurez-vous que l'adresse e-mail est professionnelle",
+    contactTip3: "Ajoutez des liens vers LinkedIn et portfolios pertinents",
+    contactTip4: "Maintenez un format de numéro de téléphone cohérent",
+    
+    profileTipsTitle: "Conseils pour le Profil Professionnel",
+    profileTip1: "Soyez concis (3-5 phrases)",
+    profileTip2: "Mettez en valeur vos forces clés et votre expertise",
+    profileTip3: "Incluez vos années d'expérience",
+    profileTip4: "Mentionnez vos objectifs de carrière ou spécialisations",
+    
+    profileSummary: "Description du Profil Professionnel",
+    
+    skillsTipsTitle: "Conseils pour la Section Compétences",
+    skillsTip1: "Listez les compétences pertinentes pour votre poste cible",
+    skillsTip2: "Incluez des compétences techniques et relationnelles",
+    skillsTip3: "Priorisez les compétences les plus importantes en premier",
+    skillsTip4: "Soyez précis et honnête sur vos capacités",
+    
+    // ✅ ADDED: Technologies Tips Title (French)
+    technologiesTipsTitle: "Conseils pour les Technologies",
+    technologiesTip1: "Groupez les technologies par catégorie (Frontend, Backend, etc.)",
+    technologiesTip2: "Incluez les numéros de version pour plus de précision",
+    technologiesTip3: "Listez les technologies que vous utilisez activement",
+    technologiesTip4: "Maintenez la liste à jour avec les technologies actuelles",
+    
+    // ✅ ADDED: Experience Tips Title (French)
+    experienceTipsTitle: "Conseils pour l'Expérience Professionnelle",
+    experienceTip1: "Commencez par le poste le plus récent",
+    experienceTip2: "Utilisez des verbes d'action pour décrire les réalisations",
+    experienceTip3: "Quantifiez les résultats lorsque possible (%, $, temps économisé)",
+    experienceTip4: "Concentrez-vous sur les responsabilités pertinentes",
+    
+    certificationsTipsTitle: "Conseils pour les Certifications",
+    certificationsTip1: "Incluez les certifications professionnelles pertinentes",
+    certificationsTip2: "Ajoutez l'organisme émetteur pour la crédibilité",
+    certificationsTip3: "Priorisez les certifications reconnues par l'industrie",
+    certificationsTip4: "Maintenez les certifications expirées à jour",
+    
+    languagesTipsTitle: "Conseils pour les Langues",
+    languagesTip1: "Soyez honnête sur votre niveau de compétence",
+    languagesTip2: "Incluez votre(vos) langue(s) maternelle(s)",
+    languagesTip3: "Mentionnez les certifications linguistiques",
+    languagesTip4: "Priorisez les langues pertinentes pour le poste",
+    
+    customSectionsTipsTitle: "Sections Personnalisées Populaires",
+    customSectionsTip1: "Projets : Présentez vos projets personnels ou professionnels",
+    customSectionsTip2: "Publications : Listez vos articles de recherche ou articles",
+    customSectionsTip3: "Prix et Honneurs : Mettez en avant vos réalisations et reconnaissances",
+    customSectionsTip4: "Bénévolat : Démontrez votre engagement communautaire",
+    customSectionsTip5: "Conférences : Interventions ou participations",
+    
+    // About texts
+    customSectionsAboutTitle: "À propos des Sections Personnalisées",
+    customSectionsAbout: "Chaque section personnalisée a son propre titre (titre principal) et sous-titre optionnel (description). Ces titres apparaissent directement dans votre CV, rendez-les donc descriptifs et professionnels.",
   
-  Spanish: {
-    // Navigation buttons
-    edit: "Editar",
-    save: "Guardar",
-    reset: "Restablecer",
-    uploadPdf: "Importar PDF",
-    newCv: "Nuevo CV",
-    selectLanguage: "Idioma",
-    preview: "Vista previa",
-    exportPdf: "PDF",
-    
-    // Sections
-    editor: "Editor de CV",
-    personalInfo: "Información Personal",
-    profile: "Perfil Profesional",
-    contact: "Contacto",
-    skills: "Habilidades",
-    technologies: "Tecnologías",
-    experiences: "Experiencias",
-    languages: "Idiomas",
-    certifications: "Certificaciones",
-    
-    // Actions
-    addSkill: "Agregar",
-    addExperience: "Agregar",
-    addLanguage: "Agregar",
-    addCertification: "Agregar",
-    addTechCategory: "Agregar Categoría",
-    addMission: "Misión",
-    
-    // Fields
-    fullName: "Nombre Completo",
-    professionalTitle: "Título Profesional",
-    email: "Correo electrónico",
-    phone: "Teléfono",
-    location: "Ubicación",
-    github: "GitHub",
-    linkedin: "LinkedIn",
-    jobTitle: "Título del Puesto",
-    company: "Empresa",
-    missions: "Misiones",
-    name: "Nombre",
-    flag: "Bandera",
-    level: "Nivel",
-    issuer: "Emisor",
-    categoryTitle: "Título de la Categoría",
-    items: "Elementos (separados por comas)",
-    
-    // Image upload
-    uploadImage: "Subir tu foto de perfil",
-    maxFileSize: "Máx. 5 MB. Formatos aceptados: JPG, PNG, GIF.",
-    removeImage: "Eliminar foto",
-    
-    // Custom sections
-    customSection: "Sección Personalizada",
-    addCustomSection: "Sección Personalizada",
-    sectionTitle: "Título de la Sección",
-    subtitle: "Subtítulo (opcional)",
-    content: "Contenido",
-    addBlock: "Bloque",
-    removeSection: "Eliminar Sección",
-    
-    // Placeholders
-    skillPlaceholder: "Habilidad",
-    missionPlaceholder: "Misión o Stack",
-    techPlaceholder: "Ej: PHP 7, JavaScript, TypeScript",
-    itemsPlaceholder: "Elementos (separados por comas)",
-    sectionPlaceholder: "Ej: Proyectos, Publicaciones, Premios...",
-    subtitlePlaceholder: "Subtítulo opcional",
-    blockPlaceholder: "Contenido del bloque",
-    
-    // Status
-    translating: "Traduciendo...",
-    
-    // Dynamic labels
-    experience: "Experiencia",
-    language: "Idioma",
-    certification: "Certificación",
+    // Dynamic UI elements Titles
+    editableSectionTitle: "Titre de la Section",
+    editableSectionTitleHint: "Ce titre apparaîtra dans votre CV au-dessus de cette section",
+    editableSectionTag: "Apparaît dans le CV",
+
+    charactersCount: "caractères",
   },
 };
+
+
+// reminder
+
+

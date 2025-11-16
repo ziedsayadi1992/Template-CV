@@ -1,4 +1,4 @@
-import type { CVData } from "../types/cv";
+import type { CVData } from "../types";
 
 export async function translateCV(targetLang: string, data: CVData): Promise<CVData> {
   try {

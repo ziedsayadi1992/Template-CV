@@ -1,5 +1,5 @@
 import * as pdfjsLib from 'pdfjs-dist';
-import { CVData } from '../types/cv';
+import { CVData } from '../types';
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;

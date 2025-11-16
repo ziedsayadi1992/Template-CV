@@ -1,4 +1,4 @@
-import { CVData } from '../types/cv';
+import { CVData } from '../types';
 
 const CACHE_VERSION = '2.0';
 const CACHE_KEY_PREFIX = 'cv_translation_v2_';

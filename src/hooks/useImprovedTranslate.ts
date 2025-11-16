@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { CVData } from '../types/cv';
+import { CVData } from '../types';
 
 interface TranslationProgress {
   current: number;
@@ -151,8 +151,16 @@ export function useImprovedTranslate(): UseTranslateReturn {
                   break;
 
                 case 'chunk':
-                  accumulatedText += eventData.text;
-                  onPartial(accumulatedText);
+                  try {
+                        const parsedChunk = JSON.parse(eventData.text);
+                        accumulatedText = JSON.stringify({
+                          ...JSON.parse(accumulatedText || '{}'),
+                          ...parsedChunk
+                        });
+                        onPartial(accumulatedText);
+                      } catch (err) {
+                        console.error('⚠️ Failed to parse/merge chunk:', err, eventData.text);
+                      }
                   
                   setProgress(prev => ({
                     ...prev,

@@ -1,4 +1,5 @@
-import type { CVData } from '../types/cv';
+import type { CVData } from '../types';
+import { generateId } from '../utils/cvHelpers';
 
 // English Template
 export const CV_TEMPLATE_EN: CVData = {
@@ -13,28 +14,29 @@ export const CV_TEMPLATE_EN: CVData = {
     phone: '+1234567890',
     location: 'Your City, Country',
     github: 'github.com/yourusername',
-    linkedin: 'linkedin.com/in/yourprofile'
+    linkedin: 'linkedin.com/in/yourprofile',
+    fields: []
   },
   skills: [
-    'Project Management & Team Leadership',
-    'Strategic Planning & Business Analysis', 
-    'Communication & Stakeholder Management'
+    { id: generateId(), value: 'Project Management & Team Leadership' },
+    { id: generateId(), value: 'Strategic Planning & Business Analysis' },
+    { id: generateId(), value: 'Communication & Stakeholder Management' }
   ],
   technologies: [
     {
-      id: '1',
+      id: generateId(),
       title: 'Frontend Development',
       items: 'React, TypeScript, HTML5, CSS3, JavaScript'
     },
     {
-      id: '2',
+      id: generateId(),
       title: 'Backend Development',
       items: 'Node.js, Python, REST APIs, GraphQL'
     }
   ],
   experiences: [
     {
-      id: '1',
+      id: generateId(),
       jobTitle: 'Senior Developer',
       company: 'Tech Company Inc.',
       missions: [
@@ -45,22 +47,11 @@ export const CV_TEMPLATE_EN: CVData = {
     }
   ],
   languages: [
-    {
-      name: 'English',
-      flag: '',
-      level: 'Native'
-    },
-    {
-      name: 'Spanish',
-      flag: '',
-      level: 'Intermediate'
-    }
+    { id: generateId(), name: 'English', level: 'Native' },
+    { id: generateId(), name: 'Spanish', level: 'Intermediate' }
   ],
   certifications: [
-    {
-      name: 'Professional Certification',
-      issuer: 'Certification Authority'
-    }
+    { id: generateId(), name: 'Professional Certification', issuer: 'Certification Authority' }
   ],
   customSections: [],
   sectionOrder: ['personal', 'profile', 'skills', 'technologies', 'experiences', 'certifications', 'languages'],
@@ -87,28 +78,29 @@ export const CV_TEMPLATE_FR: CVData = {
     phone: '+33123456789',
     location: 'Votre Ville, Pays',
     github: 'github.com/votrenom',
-    linkedin: 'linkedin.com/in/votreprofil'
+    linkedin: 'linkedin.com/in/votreprofil',
+    fields: []
   },
   skills: [
-    'Gestion de Projet & Leadership d\'Équipe',
-    'Planification Stratégique & Analyse Business',
-    'Communication & Gestion des Parties Prenantes'
+    { id: generateId(), value: 'Gestion de Projet & Leadership d\'Équipe' },
+    { id: generateId(), value: 'Planification Stratégique & Analyse Business' },
+    { id: generateId(), value: 'Communication & Gestion des Parties Prenantes' }
   ],
   technologies: [
     {
-      id: '1',
+      id: generateId(),
       title: 'Développement Frontend',
       items: 'React, TypeScript, HTML5, CSS3, JavaScript'
     },
     {
-      id: '2',
+      id: generateId(),
       title: 'Développement Backend',
       items: 'Node.js, Python, APIs REST, GraphQL'
     }
   ],
   experiences: [
     {
-      id: '1',
+      id: generateId(),
       jobTitle: 'Développeur Senior',
       company: 'Entreprise Tech Inc.',
       missions: [
@@ -119,22 +111,11 @@ export const CV_TEMPLATE_FR: CVData = {
     }
   ],
   languages: [
-    {
-      name: 'Français',
-      flag: '',
-      level: 'Langue maternelle'
-    },
-    {
-      name: 'Anglais',
-      flag: '',
-      level: 'Courant'
-    }
+    { id: generateId(), name: 'Français', level: 'Langue maternelle' },
+    { id: generateId(), name: 'Anglais', level: 'Courant' }
   ],
   certifications: [
-    {
-      name: 'Certification Professionnelle',
-      issuer: 'Autorité de Certification'
-    }
+    { id: generateId(), name: 'Certification Professionnelle', issuer: 'Autorité de Certification' }
   ],
   customSections: [],
   sectionOrder: ['personal', 'profile', 'skills', 'technologies', 'experiences', 'certifications', 'languages'],
@@ -148,218 +129,168 @@ export const CV_TEMPLATE_FR: CVData = {
   }
 };
 
-// Arabic Template
-export const CV_TEMPLATE_AR: CVData = {
-  personalInfo: {
-    fullName: 'اسمك الكامل',
-    professionalTitle: 'مسماك الوظيفي',
-    avatarUrl: ''
-  },
-  profile: 'اكتب ملخصك المهني هنا. صف خبرتك ومهاراتك وأهدافك المهنية بطريقة مقنعة...',
-  contact: {
-    email: 'your.email@example.com',
-    phone: '+966123456789',
-    location: 'مدينتك، البلد',
-    github: 'github.com/username',
-    linkedin: 'linkedin.com/in/profile'
-  },
-  skills: [
-    'إدارة المشاريع وقيادة الفريق',
-    'التخطيط الاستراتيجي وتحليل الأعمال',
-    'التواصل وإدارة أصحاب المصلحة'
-  ],
-  technologies: [
-    {
-      id: '1',
-      title: 'تطوير الواجهة الأمامية',
-      items: 'React, TypeScript, HTML5, CSS3, JavaScript'
-    },
-    {
-      id: '2',
-      title: 'تطوير الواجهة الخلفية',
-      items: 'Node.js, Python, REST APIs, GraphQL'
-    }
-  ],
-  experiences: [
-    {
-      id: '1',
-      jobTitle: 'مطور أول',
-      company: 'شركة التقنية',
-      missions: [
-        'قيادة تطوير تطبيقات الويب باستخدام React و TypeScript',
-        'التعاون مع فرق متعددة الوظائف لتسليم المشاريع في الوقت المحدد',
-        'توجيه المطورين المبتدئين ومراجعة الأكواد'
-      ]
-    }
-  ],
-  languages: [
-    {
-      name: 'العربية',
-      flag: '',
-      level: 'اللغة الأم'
-    },
-    {
-      name: 'الإنجليزية',
-      flag: '',
-      level: 'متقدم'
-    }
-  ],
-  certifications: [
-    {
-      name: 'شهادة مهنية',
-      issuer: 'جهة إصدار الشهادات'
-    }
-  ],
-  customSections: [],
-  sectionOrder: ['personal', 'profile', 'skills', 'technologies', 'experiences', 'certifications', 'languages'],
-  sectionTitles: {
-    profile: 'الملف المهني',
-    skills: 'المهارات الأساسية',
-    technologies: 'البيئة التقنية',
-    experiences: 'الخبرة المهنية',
-    certifications: 'الشهادات',
-    languages: 'اللغات'
-  }
-};
-
-// German Template
 export const CV_TEMPLATE_DE: CVData = {
   personalInfo: {
     fullName: 'Ihr Name',
-    professionalTitle: 'Ihr Berufsbezeichnung',
+    professionalTitle: 'Ihre Berufsbezeichnung',
     avatarUrl: ''
   },
-  profile: 'Schreiben Sie hier Ihre professionelle Zusammenfassung. Beschreiben Sie Ihre Erfahrung, Fähigkeiten und Karriereziele überzeugend...',
+
+  profile:
+    'Verfassen Sie hier Ihr berufliches Profil. Beschreiben Sie Ihre Erfahrung, Kernkompetenzen und beruflichen Ziele präzise und überzeugend...',
+
   contact: {
-    email: 'ihre.email@beispiel.de',
-    phone: '+49123456789',
-    location: 'Ihre Stadt, Land',
-    github: 'github.com/ihrname',
-    linkedin: 'linkedin.com/in/ihrprofil'
+    email: 'ihre.email@example.de',
+    phone: '+491234567890',
+    location: 'Ihre Stadt, Deutschland',
+    github: 'github.com/ihrprofil',
+    linkedin: 'linkedin.com/in/ihrprofil',
+    fields: []  
   },
+
   skills: [
-    'Projektmanagement & Teamführung',
-    'Strategische Planung & Geschäftsanalyse',
-    'Kommunikation & Stakeholder-Management'
+    { id: generateId(), value: 'Projektmanagement & Teamführung' },
+    { id: generateId(), value: 'Strategische Planung & Geschäftsanalytik' },
+    { id: generateId(), value: 'Kommunikation & Stakeholder-Management' }
   ],
+
   technologies: [
     {
-      id: '1',
+      id: generateId(),
       title: 'Frontend-Entwicklung',
       items: 'React, TypeScript, HTML5, CSS3, JavaScript'
     },
     {
-      id: '2',
+      id: generateId(),
       title: 'Backend-Entwicklung',
       items: 'Node.js, Python, REST APIs, GraphQL'
     }
   ],
+
   experiences: [
     {
-      id: '1',
-      jobTitle: 'Senior-Entwickler',
-      company: 'Tech Firma GmbH',
+      id: generateId(),
+      jobTitle: 'Senior Entwickler',
+      company: 'Tech Unternehmen GmbH',
       missions: [
-        'Leitung der Entwicklung von Webanwendungen mit React und TypeScript',
-        'Zusammenarbeit mit funktionsübergreifenden Teams zur Lieferung von Projekten',
-        'Mentoring von Junior-Entwicklern und Code-Reviews'
+        'Leitung der Entwicklung moderner Webanwendungen mit React und TypeScript',
+        'Zusammenarbeit mit funktionsübergreifenden Teams zur termingerechten Projektabwicklung',
+        'Coaching von Junior-Entwicklern sowie Durchführung von Code-Reviews'
       ]
     }
   ],
+
   languages: [
-    {
-      name: 'Deutsch',
-      flag: '',
-      level: 'Muttersprache'
-    },
-    {
-      name: 'Englisch',
-      flag: '',
-      level: 'Fließend'
-    }
+    { id: generateId(), name: 'Deutsch', level: 'Muttersprache' },
+    { id: generateId(), name: 'Englisch', level: 'Fließend' }
   ],
+
   certifications: [
     {
-      name: 'Berufszertifikat',
+      id: generateId(),
+      name: 'Berufliche Zertifizierung',
       issuer: 'Zertifizierungsstelle'
     }
   ],
+
   customSections: [],
-  sectionOrder: ['personal', 'profile', 'skills', 'technologies', 'experiences', 'certifications', 'languages'],
+
+  sectionOrder: [
+    'personal',
+    'profile',
+    'skills',
+    'technologies',
+    'experiences',
+    'certifications',
+    'languages'
+  ],
+
   sectionTitles: {
-    profile: 'Berufsprofil',
+    profile: 'Berufliches Profil',
     skills: 'Kernkompetenzen',
-    technologies: 'Technische Umgebung',
+    technologies: 'Technisches Umfeld',
     experiences: 'Berufserfahrung',
     certifications: 'Zertifizierungen',
     languages: 'Sprachen'
   }
 };
 
-// Spanish Template
 export const CV_TEMPLATE_ES: CVData = {
   personalInfo: {
     fullName: 'Tu Nombre',
     professionalTitle: 'Tu Título Profesional',
     avatarUrl: ''
   },
-  profile: 'Escribe tu resumen profesional aquí. Describe tu experiencia, habilidades y objetivos profesionales de manera convincente...',
+
+  profile:
+    'Escribe aquí tu resumen profesional. Describe tu experiencia, habilidades principales y objetivos laborales de forma clara y atractiva...',
+
   contact: {
-    email: 'tu.email@ejemplo.com',
-    phone: '+34123456789',
-    location: 'Tu Ciudad, País',
+    email: 'tu.email@ejemplo.es',
+    phone: '+341234567890',
+    location: 'Tu Ciudad, España',
     github: 'github.com/tuusuario',
-    linkedin: 'linkedin.com/in/tuperfil'
+    linkedin: 'linkedin.com/in/tuperfil',
+    fields: []
   },
+
   skills: [
-    'Gestión de Proyectos y Liderazgo de Equipo',
-    'Planificación Estratégica y Análisis de Negocio',
-    'Comunicación y Gestión de Stakeholders'
+    { id: generateId(), value: 'Gestión de Proyectos y Liderazgo de Equipos' },
+    { id: generateId(), value: 'Planificación Estratégica y Análisis de Negocio' },
+    { id: generateId(), value: 'Comunicación y Gestión de Stakeholders' }
   ],
+
   technologies: [
     {
-      id: '1',
+      id: generateId(),
       title: 'Desarrollo Frontend',
       items: 'React, TypeScript, HTML5, CSS3, JavaScript'
     },
     {
-      id: '2',
+      id: generateId(),
       title: 'Desarrollo Backend',
       items: 'Node.js, Python, APIs REST, GraphQL'
     }
   ],
+
   experiences: [
     {
-      id: '1',
+      id: generateId(),
       jobTitle: 'Desarrollador Senior',
-      company: 'Empresa Tech Inc.',
+      company: 'Empresa Tecnológica S.A.',
       missions: [
-        'Liderazgo en el desarrollo de aplicaciones web usando React y TypeScript',
-        'Colaboración con equipos multifuncionales para entregar proyectos a tiempo',
-        'Mentoría de desarrolladores junior y revisiones de código'
+        'Lideré el desarrollo de aplicaciones web utilizando React y TypeScript',
+        'Colaboré con equipos multidisciplinarios para entregar proyectos dentro del plazo',
+        'Mentoricé a desarrolladores junior y realicé revisiones de código'
       ]
     }
   ],
+
   languages: [
-    {
-      name: 'Español',
-      flag: '',
-      level: 'Nativo'
-    },
-    {
-      name: 'Inglés',
-      flag: '',
-      level: 'Avanzado'
-    }
+    { id: generateId(), name: 'Español', level: 'Nativo' },
+    { id: generateId(), name: 'Inglés', level: 'Intermedio' }
   ],
+
   certifications: [
     {
+      id: generateId(),
       name: 'Certificación Profesional',
-      issuer: 'Autoridad de Certificación'
+      issuer: 'Entidad Certificadora'
     }
   ],
+
   customSections: [],
-  sectionOrder: ['personal', 'profile', 'skills', 'technologies', 'experiences', 'certifications', 'languages'],
+
+  sectionOrder: [
+    'personal',
+    'profile',
+    'skills',
+    'technologies',
+    'experiences',
+    'certifications',
+    'languages'
+  ],
+
   sectionTitles: {
     profile: 'Perfil Profesional',
     skills: 'Habilidades Clave',
@@ -370,6 +301,8 @@ export const CV_TEMPLATE_ES: CVData = {
   }
 };
 
+
+
 // Helper function to get template by language
 export const getCVTemplate = (language: string): CVData => {
   switch (language) {
@@ -377,8 +310,6 @@ export const getCVTemplate = (language: string): CVData => {
       return CV_TEMPLATE_EN;
     case 'Français':
       return CV_TEMPLATE_FR;
-    case 'Arabic':
-      return CV_TEMPLATE_AR;
     case 'German':
       return CV_TEMPLATE_DE;
     case 'Spanish':

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { CVData } from '../types/cv';
+import type { CVData } from '../types';
 import { uiTranslations } from '../data/uiTranslations';
 import { translationCache } from '../utils/translationCache';
 

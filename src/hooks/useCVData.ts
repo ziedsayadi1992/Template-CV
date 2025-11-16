@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { CV_DATA } from '../data/cvData';
-import type { CVData } from '../types/cv';
+import type { CVData } from '../types';
+import { migrateLegacyData } from '../utils/cvHelpers';
+import { migrateCustomSections } from '../utils/customSectionsMigration'; // ✅ NEW IMPORT
 
 // Version for data migration
-const CV_DATA_VERSION = 1;
+const CV_DATA_VERSION = 2; // ✅ Increased version for ID migration
 
 interface StoredCVData extends CVData {
   version?: number;
@@ -75,7 +77,8 @@ const mergeWithDefaults = (data: any): CVData => {
       phone: data.contact?.phone || CV_DATA.contact.phone,
       location: data.contact?.location || CV_DATA.contact.location,
       github: data.contact?.github || CV_DATA.contact.github,
-      linkedin: data.contact?.linkedin || CV_DATA.contact.linkedin
+      linkedin: data.contact?.linkedin || CV_DATA.contact.linkedin,
+      fields: Array.isArray(data.contact?.fields) ? data.contact.fields : CV_DATA.contact.fields
     },
     skills: Array.isArray(data.skills) ? data.skills : CV_DATA.skills,
     technologies: Array.isArray(data.technologies) ? data.technologies : CV_DATA.technologies,
@@ -100,21 +103,27 @@ const loadFromStorage = (): CVData => {
 
     const parsed = JSON.parse(saved) as StoredCVData;
     
+    // ✅ Always migrate data to ensure IDs are present
+    let migratedData = migrateLegacyData(parsed);
+    
+    // ✅ NEW: Migrate custom sections to ensure blocks arrays exist
+    migratedData = migrateCustomSections(migratedData);
+    
     // Check version
-    if (parsed.version && parsed.version !== CV_DATA_VERSION) {
-      console.log(`🔄 Migrating CV data from version ${parsed.version} to ${CV_DATA_VERSION}`);
-      // Add migration logic here if needed in future
+    if (!parsed.version || parsed.version < CV_DATA_VERSION) {
+      console.log(`🔄 Migrating CV data from version ${parsed.version || 1} to ${CV_DATA_VERSION}`);
+      // Save the migrated data
+      saveToStorage(migratedData);
     }
 
     // Validate data structure
-    if (!validateCVData(parsed)) {
-      console.warn('⚠️ Stored CV data is invalid, using defaults');
-      console.warn('💡 Tip: Check your localStorage for corrupted data');
+    if (!validateCVData(migratedData)) {
+      console.warn('⚠️ Stored CV data is invalid after migration, using defaults');
       return CV_DATA;
     }
 
-    console.log('✅ Loaded CV data from localStorage');
-    return parsed as CVData;
+    console.log('✅ Loaded and migrated CV data from localStorage');
+    return migratedData as CVData;
 
   } catch (err) {
     console.error('❌ Failed to load CV data from localStorage:', err);
@@ -220,7 +229,8 @@ export const useCVData = () => {
         phone: '',
         location: '',
         github: null,
-        linkedin: null
+        linkedin: null,
+        fields: []
       },
       skills: [],
       technologies: [],
@@ -244,13 +254,19 @@ export const useCVData = () => {
   };
 
   const loadCVData = (newData: CVData) => {
+    // ✅ Always migrate loaded data
+    let migratedData = migrateLegacyData(newData);
+    
+    // ✅ NEW: Also migrate custom sections
+    migratedData = migrateCustomSections(migratedData);
+    
     // Try to validate, but be lenient
-    if (!validateCVData(newData)) {
+    if (!validateCVData(migratedData)) {
       console.warn('⚠️ Loaded data has validation issues, merging with defaults');
-      const mergedData = mergeWithDefaults(newData);
+      const mergedData = mergeWithDefaults(migratedData);
       setCVData(mergedData);
     } else {
-      setCVData(newData);
+      setCVData(migratedData);
     }
     setHasUnsavedChanges(true);
   };

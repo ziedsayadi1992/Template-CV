@@ -14,8 +14,8 @@ function App() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isProcessingPDF, setIsProcessingPDF] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { cvData, updateCVData, saveCVData, resetCVData, createNewCV, loadCVData, hasUnsavedChanges } = useCVData();
-  const { t, translatedCV, setTranslatedCV, currentLanguage, setCvSourceLanguage, cvSourceLanguage } = useLanguage();
+  const { cvData, updateCVData, saveCVData, resetCVData, loadCVData, hasUnsavedChanges } = useCVData();
+  const { t, translatedCV, setTranslatedCV, currentLanguage, setCvSourceLanguage } = useLanguage();
 
   const displayData = translatedCV || cvData;
 

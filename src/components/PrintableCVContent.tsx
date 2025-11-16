@@ -12,7 +12,7 @@ import {
   FileText,
   Layers
 } from 'lucide-react';
-import type { CVData, CustomSection } from '../types/cv';
+import type { CVData, CustomSection } from '../types';
 
 interface PrintableCVContentProps {
   data: CVData;
@@ -22,10 +22,18 @@ interface PrintableCVContentProps {
 const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentProps>(
   ({ data, activeSection }, ref) => {
 
+    // ✅ FIX: Map "contact" to "personal" since contact info is part of personal header
     useEffect(() => {
       if (!activeSection) return;
-      const el = document.getElementById("preview-" + activeSection);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      
+      // Map "contact" to "personal" since contact info is displayed in the personal header
+      const scrollToSection = activeSection === 'contact' ? 'personal' : activeSection;
+      
+      const el = document.getElementById("preview-" + scrollToSection);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        console.log(`Scrolled to section: ${scrollToSection} (from activeSection: ${activeSection})`);
+      }
     }, [activeSection]);
 
     // ✅ FIX: Helper to safely get section titles with fallbacks
@@ -58,35 +66,65 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         </h2>
 
         <div className="contact-info flex flex-wrap justify-center gap-6 text-sm text-gray-600">
-          {data.contact.email && (
-            <div className="contact-item flex items-center gap-2">
-              <Mail size={16} className="text-gray-800" />
-              <span>{data.contact.email}</span>
-            </div>
-          )}
-          {data.contact.phone && (
-            <div className="contact-item flex items-center gap-2">
-              <Phone size={16} className="text-gray-800" />
-              <span>{data.contact.phone}</span>
-            </div>
-          )}
-          {data.contact.location && (
-            <div className="contact-item flex items-center gap-2">
-              <MapPin size={16} className="text-gray-800" />
-              <span>{data.contact.location}</span>
-            </div>
-          )}
-          {data.contact.github && (
-            <div className="contact-item flex items-center gap-2">
-              <Github size={16} className="text-gray-800" />
-              <span>{data.contact.github}</span>
-            </div>
-          )}
-          {data.contact.linkedin && (
-            <div className="contact-item flex items-center gap-2">
-              <Linkedin size={16} className="text-gray-800" />
-              <span>{data.contact.linkedin}</span>
-            </div>
+          {/* ✅ NEW: Use dynamic fields if available, respecting user's custom order */}
+          {data.contact.fields && data.contact.fields.length > 0 ? (
+            data.contact.fields.map((field) => {
+              if (!field.value) return null;
+              
+              // Map field types to icons
+              const iconMap: { [key: string]: any } = {
+                email: Mail,
+                phone: Phone,
+                location: MapPin,
+                github: Github,
+                linkedin: Linkedin,
+                website: Layers,
+                custom: FileText,
+              };
+              
+              const Icon = iconMap[field.type] || Mail;
+              
+              return (
+                <div key={field.id} className="contact-item flex items-center gap-2">
+                  <Icon size={16} className="text-gray-800" />
+                  <span>{field.value}</span>
+                </div>
+              );
+            })
+          ) : (
+            // Legacy field rendering (fallback)
+            <>
+              {data.contact.email && (
+                <div className="contact-item flex items-center gap-2">
+                  <Mail size={16} className="text-gray-800" />
+                  <span>{data.contact.email}</span>
+                </div>
+              )}
+              {data.contact.phone && (
+                <div className="contact-item flex items-center gap-2">
+                  <Phone size={16} className="text-gray-800" />
+                  <span>{data.contact.phone}</span>
+                </div>
+              )}
+              {data.contact.location && (
+                <div className="contact-item flex items-center gap-2">
+                  <MapPin size={16} className="text-gray-800" />
+                  <span>{data.contact.location}</span>
+                </div>
+              )}
+              {data.contact.github && (
+                <div className="contact-item flex items-center gap-2">
+                  <Github size={16} className="text-gray-800" />
+                  <span>{data.contact.github}</span>
+                </div>
+              )}
+              {data.contact.linkedin && (
+                <div className="contact-item flex items-center gap-2">
+                  <Linkedin size={16} className="text-gray-800" />
+                  <span>{data.contact.linkedin}</span>
+                </div>
+              )}
+            </>
           )}
         </div>
       </header>
@@ -109,6 +147,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       );
     };
 
+    // ✅ UPDATED: Skills rendering with ID support
     const renderSkillsSection = () => {
       if (!data.skills || data.skills.length === 0) return null;
       return (
@@ -118,10 +157,10 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             {getSectionTitle('skills', 'Skills')}
           </h3>
           <div className="space-y-3">
-            {data.skills.map((skill, index) => (
-              <div key={index} className="flex items-start gap-3">
+            {data.skills.map((skill) => (
+              <div key={skill.id} className="flex items-start gap-3">
                 <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                <span className="text-gray-700">{skill}</span>
+                <span className="text-gray-700">{skill.value}</span>
               </div>
             ))}
           </div>
@@ -173,7 +212,6 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
                 <ul className="space-y-2 text-sm">
                   {experience.missions.map((mission, missionIndex) => (
                     <li key={missionIndex}>
-                      {/* ✅ REMOVED: stack-info CSS styling - now all missions use simple bullet points */}
                       <div className="flex items-start gap-3">
                         <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                         <span className="text-gray-700">{mission}</span>
@@ -188,6 +226,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       );
     };
 
+    // ✅ UPDATED: Certifications rendering with ID support
     const renderCertificationsSection = () => {
       if (!data.certifications || data.certifications.length === 0) return null;
       return (
@@ -197,8 +236,8 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             {getSectionTitle('certifications', 'Certifications')}
           </h3>
           <div className="space-y-3">
-            {data.certifications.map((cert, index) => (
-              <div key={index} className="cert-item flex items-start gap-3">
+            {data.certifications.map((cert) => (
+              <div key={cert.id} className="cert-item flex items-start gap-3">
                 <Award size={16} className="text-gray-800 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-gray-800">{cert.name}</p>
@@ -211,6 +250,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       );
     };
 
+    // ✅ UPDATED: Languages rendering with ID support
     const renderLanguagesSection = () => {
       if (!data.languages || data.languages.length === 0) return null;
       return (
@@ -220,9 +260,8 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             {getSectionTitle('languages', 'Languages')}
           </h3>
           <div className="space-y-3">
-            {data.languages.map((language, index) => (
-              <div key={index} className="language-item flex items-center gap-3">
-                {language.flag && <span className="text-2xl">{language.flag}</span>}
+            {data.languages.map((language) => (
+              <div key={language.id} className="language-item flex items-center gap-3">
                 <div>
                   <span className="font-medium text-gray-800">{language.name}</span>
                   <span className="text-gray-600 ml-2">- {language.level}</span>
@@ -234,6 +273,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       );
     };
 
+    // ✅ UPDATED: Custom section rendering with block ID support
     const renderCustomSection = (section: CustomSection) => (
       <section key={section.id} id={`preview-${section.id}`}>
         <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
@@ -244,9 +284,9 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           <p className="text-gray-600 italic mb-3">{section.subtitle}</p>
         )}
         <div className="space-y-3">
-          {section.blocks.map((block, index) => (
-            <div key={index} className="text-gray-700 leading-relaxed">
-              {block}
+          {section.blocks.map((block) => (
+            <div key={block.id} className="text-gray-700 leading-relaxed">
+              {block.content}
             </div>
           ))}
         </div>
