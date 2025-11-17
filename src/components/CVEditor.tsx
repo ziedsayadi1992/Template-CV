@@ -98,6 +98,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
           activeSection={activeSection}
           overallProgress={overallProgress}
           onSectionChange={setActiveSection}
+          t={t}
         />
 
         {/* Main Content Area */}
@@ -161,6 +162,9 @@ const CVEditor: React.FC<CVEditorProps> = ({
                 expandedExperiences={expandedExperiences}
                 onUpdate={onUpdate}
                 toggleExperience={toggleExperience}
+                onDragEnd={(e) => handleDragEnd(e, data, onUpdate, 'experiences')}
+                sensors={sensors}
+                onDragStart={handleDragStart}
                 t={t}
               />
             )}
@@ -188,8 +192,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
                 activeSection={activeSection}
                 setActiveSection={setActiveSection}
                 sensors={sensors}
-                onDragStart={handleDragStart}
-                onDragEnd={(e) => handleDragEnd(e, data, onUpdate, 'customSection')}
+                onDragEnd={(e:any) => handleDragEnd(e, data, onUpdate, 'customSection')}
                 t={t}
               />
             )}

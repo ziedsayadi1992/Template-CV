@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Trash2, Edit2, Award } from 'lucide-react';
 import { CVData, Certification } from '../../types';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface CertificationsSectionProps {
   data: CVData;
@@ -70,22 +71,12 @@ export const CertificationsSection: React.FC<CertificationsSectionProps> = ({
       </div>
 
       {/* Professional Tips */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-blue-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-blue-900 font-medium mb-1">
-              {t('certificationsTipsTitle')}
-            </p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• {t('certificationsTip1')}</li>
-              <li>• {t('certificationsTip2')}</li>
-              <li>• {t('certificationsTip3')}</li>
-              <li>• {t('certificationsTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="certificationsTipsTitle" tips={[
+        t('certificationsTip1'),
+        t('certificationsTip2'),
+        t('certificationsTip3'),
+        t('certificationsTip4')
+      ]} />
 
       {/* CV Title Editor */}
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50/30 border-2 border-blue-200 rounded-xl p-5">

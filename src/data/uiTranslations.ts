@@ -1,5 +1,3 @@
-// ✅ UPDATED FILE: Added technologiesTipsTitle and experienceTipsTitle translations
-// These titles are used for green tip boxes in Technologies and Experiences sections
 
 export interface UITranslations {
   [key: string]: string;
@@ -177,6 +175,21 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     editableSectionTag: "Appears in CV",
 
     charactersCount: "characters",
+    overallProgress: "Overall Progress",
+
+
+    // Blocks Info 
+
+    noBlocksYet: "No content blocks yet. Click \"Add Block\" to get started.",
+    contentBlocks: "Content Blocks",
+    customCreateSections: "Create sections for projects, awards, publications, etc.",
+
+    Email: "Email",
+    Phone: "Phone",
+    Location: "Location",
+    GitHub: "GitHub",
+    LinkedIn: "LinkedIn",
+    Website: "Website",
   },
   
   Français: {
@@ -350,6 +363,18 @@ export const uiTranslations: { [lang: string]: UITranslations } = {
     editableSectionTag: "Apparaît dans le CV",
 
     charactersCount: "caractères",
+    overallProgress: "Votre progression globale",
+
+    noBlocksYet: "Pas de blocs de contenu pour le moment. Cliquez sur \"Ajouter Bloc\" pour commencer.",
+    contentBlocks: "Blocs de Contenu",
+    customCreateSections: "Créez des sections pour des projets, récompenses, publications, etc.",
+
+    Email: "Email",
+    Phone: "Téléphone",
+    Location: "Localisation",
+    GitHub: "GitHub",
+    LinkedIn: "LinkedIn",
+    Website: "Site Web",
   },
 };
 

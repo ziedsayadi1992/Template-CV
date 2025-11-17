@@ -4,6 +4,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CVData, Skill } from '../../types';
 import SortableItem from './Sortableitem';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface SkillsSectionProps {
   data: CVData;
@@ -76,22 +77,12 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       </div>
 
       {/* Professional Tips */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-blue-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-blue-900 font-medium mb-1">
-              {t('skillsTipsTitle')}
-            </p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• {t('skillsTip1')}</li>
-              <li>• {t('skillsTip2')}</li>
-              <li>• {t('skillsTip3')}</li>
-              <li>• {t('skillsTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="skillsTipsTitle" tips={[
+        t('skillsTip1'),
+        t('skillsTip2'),
+        t('skillsTip3'),
+        t('skillsTip4')
+      ]} />
 
       {/* CV Title Editor */}
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50/30 border-2 border-blue-200 rounded-xl p-5">

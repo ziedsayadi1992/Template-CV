@@ -13,6 +13,7 @@ interface SidebarNavigationProps {
   activeSection: string;
   overallProgress: number;
   onSectionChange: (sectionId: string) => void;
+  t: (key: string) => string;
 }
 
 const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
@@ -20,6 +21,7 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   activeSection,
   overallProgress,
   onSectionChange,
+  t
 }) => {
   return (
     <div className="w-72 bg-white/90 backdrop-blur-sm border-r border-neutral-200/60 overflow-y-auto">
@@ -27,7 +29,7 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
         {/* Overall Progress */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-neutral-700">Overall Progress</span>
+            <span className="text-sm font-semibold text-neutral-700">{t('overallProgress')}</span>
             <span className="text-sm font-bold text-blue-600">{Math.round(overallProgress)}%</span>
           </div>
           <div className="w-full h-3 bg-neutral-200 rounded-full overflow-hidden shadow-inner">

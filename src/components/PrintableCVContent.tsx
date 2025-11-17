@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Mail,
   Phone,
@@ -22,9 +22,20 @@ interface PrintableCVContentProps {
 const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentProps>(
   ({ data, activeSection }, ref) => {
 
-    // ✅ FIX: Map "contact" to "personal" since contact info is part of personal header
+    // ✅ FIX: Track previous section to prevent unnecessary scrolls
+    const prevActiveSectionRef = useRef<string | undefined>(activeSection);
+
+    // ✅ FIX: Only scroll when activeSection actually changes
     useEffect(() => {
       if (!activeSection) return;
+      
+      // ✅ CRITICAL FIX: Don't scroll if we're already at this section
+      if (prevActiveSectionRef.current === activeSection) {
+        return;
+      }
+      
+      // Update the ref
+      prevActiveSectionRef.current = activeSection;
       
       // Map "contact" to "personal" since contact info is displayed in the personal header
       const scrollToSection = activeSection === 'contact' ? 'personal' : activeSection;
@@ -68,31 +79,22 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <div className="contact-info flex flex-wrap justify-center gap-6 text-sm text-gray-600">
           {/* ✅ NEW: Use dynamic fields if available, respecting user's custom order */}
           {data.contact.fields && data.contact.fields.length > 0 ? (
-            data.contact.fields.map((field) => {
-              if (!field.value) return null;
-              
-              // Map field types to icons
-              const iconMap: { [key: string]: any } = {
-                email: Mail,
-                phone: Phone,
-                location: MapPin,
-                github: Github,
-                linkedin: Linkedin,
-                website: Layers,
-                custom: FileText,
-              };
-              
-              const Icon = iconMap[field.type] || Mail;
-              
-              return (
+            <>
+              {data.contact.fields.map((field) => (
                 <div key={field.id} className="contact-item flex items-center gap-2">
-                  <Icon size={16} className="text-gray-800" />
+                  {field.type === 'email' && <Mail size={16} className="text-gray-800" />}
+                  {field.type === 'phone' && <Phone size={16} className="text-gray-800" />}
+                  {field.type === 'location' && <MapPin size={16} className="text-gray-800" />}
+                  {field.type === 'github' && <Github size={16} className="text-gray-800" />}
+                  {field.type === 'linkedin' && <Linkedin size={16} className="text-gray-800" />}
+                  {!['email', 'phone', 'location', 'github', 'linkedin'].includes(field.type) && (
+                    <span className="text-gray-800">•</span>
+                  )}
                   <span>{field.value}</span>
                 </div>
-              );
-            })
+              ))}
+            </>
           ) : (
-            // Legacy field rendering (fallback)
             <>
               {data.contact.email && (
                 <div className="contact-item flex items-center gap-2">
@@ -174,19 +176,13 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
         <section id="preview-technologies">
           <h3 className="section-title flex items-center gap-3 text-xl font-bold text-gray-800 mb-4 border-b-2 border-gray-800 pb-2">
             <Code size={22} />
-            {getSectionTitle('technologies', 'Technical Environment')}
+            {getSectionTitle('technologies', 'Technologies')}
           </h3>
-          <div className="tech-categories space-y-6">
-            {data.technologies.map((techCategory) => (
-              <div key={techCategory.id} className="tech-category">
-                <h4 className="text-lg font-semibold text-gray-800 mb-3 border-l-4 border-gray-800 pl-3">
-                  {techCategory.title}
-                </h4>
-                <div className="tech-items">
-                  <p className="text-gray-700 leading-relaxed">
-                    {techCategory.items}
-                  </p>
-                </div>
+          <div className="space-y-4">
+            {data.technologies.map((category) => (
+              <div key={category.id} className="category-item">
+                <div className="font-semibold text-gray-800 mb-2">{category.title}</div>
+                <div className="text-gray-700 leading-relaxed">{category.items}</div>
               </div>
             ))}
           </div>
@@ -202,23 +198,23 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             <Briefcase size={22} />
             {getSectionTitle('experiences', 'Professional Experience')}
           </h3>
-          <div className="space-y-8">
-            {data.experiences.map((experience) => (
-              <div key={experience.id} className="experience-item border-l-4 border-gray-300 pl-6">
-                <div className="mb-3">
-                  <h4 className="text-lg font-bold text-gray-800">{experience.jobTitle}</h4>
-                  <p className="text-gray-600 font-medium">{experience.company}</p>
+          <div className="space-y-6">
+            {data.experiences.map((exp) => (
+              <div key={exp.id} className="experience-item">
+                <div className="flex flex-col mb-3">
+                  <h4 className="text-lg font-bold text-gray-800">{exp.jobTitle}</h4>
+                  <p className="text-md font-semibold text-gray-700">{exp.company}</p>
                 </div>
-                <ul className="space-y-2 text-sm">
-                  {experience.missions.map((mission, missionIndex) => (
-                    <li key={missionIndex}>
-                      <div className="flex items-start gap-3">
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                        <span className="text-gray-700">{mission}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                {exp.missions && exp.missions.length > 0 && (
+                  <ul className="space-y-2">
+                    {exp.missions.map((mission, idx) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <span className="text-gray-400 mt-1.5">•</span>
+                        <span className="text-gray-700 flex-1">{mission}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             ))}
           </div>
@@ -226,7 +222,6 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       );
     };
 
-    // ✅ UPDATED: Certifications rendering with ID support
     const renderCertificationsSection = () => {
       if (!data.certifications || data.certifications.length === 0) return null;
       return (
@@ -237,11 +232,11 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           </h3>
           <div className="space-y-3">
             {data.certifications.map((cert) => (
-              <div key={cert.id} className="cert-item flex items-start gap-3">
-                <Award size={16} className="text-gray-800 mt-1 flex-shrink-0" />
+              <div key={cert.id} className="certification-item flex items-start gap-3">
+                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                 <div>
-                  <p className="font-medium text-gray-800">{cert.name}</p>
-                  <p className="text-sm text-gray-600">{cert.issuer}</p>
+                  <div className="font-medium text-gray-800">{cert.name}</div>
+                  <div className="text-sm text-gray-600">{cert.issuer}</div>
                 </div>
               </div>
             ))}
@@ -250,7 +245,6 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
       );
     };
 
-    // ✅ UPDATED: Languages rendering with ID support
     const renderLanguagesSection = () => {
       if (!data.languages || data.languages.length === 0) return null;
       return (
@@ -259,7 +253,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
             <LanguagesIcon size={22} />
             {getSectionTitle('languages', 'Languages')}
           </h3>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {data.languages.map((language) => (
               <div key={language.id} className="language-item flex items-center gap-3">
                 <div>
@@ -339,6 +333,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
               {renderExperiencesSection()}
               {renderCertificationsSection()}
               {renderLanguagesSection()}
+              {data.customSections?.map(section => renderCustomSection(section))}
             </>
           )}
         </div>

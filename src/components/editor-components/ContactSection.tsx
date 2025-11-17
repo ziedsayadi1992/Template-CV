@@ -4,6 +4,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CVData, ContactField } from '../../types';
 import SortableItem from './Sortableitem';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface ContactSectionProps {
   data: CVData;
@@ -101,22 +102,12 @@ const ContactSection: React.FC<ContactSectionProps> = ({
       </div>
 
       {/* Professional Tips */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-blue-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-blue-900 font-medium mb-1">
-              {t('contactTipsTitle')}
-            </p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• {t('contactTip1')}</li>
-              <li>• {t('contactTip2')}</li>
-              <li>• {t('contactTip3')}</li>
-              <li>• {t('contactTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="contactTipsTitle" tips={[
+        t('contactTip1'),
+        t('contactTip2'),
+        t('contactTip3'),
+        t('contactTip4')
+      ]} />
 
       {/* Contact Fields List */}
       <DndContext
@@ -139,12 +130,12 @@ const ContactSection: React.FC<ContactSectionProps> = ({
                       onChange={(e) => updateContactField(field.id, { type: e.target.value })}
                       className="px-3 py-2 border-2 border-neutral-200 rounded-lg focus:ring-2 focus:ring-blue-500 font-medium text-sm"
                     >
-                      <option value="email">Email</option>
-                      <option value="phone">Phone</option>
-                      <option value="location">Location</option>
-                      <option value="github">GitHub</option>
-                      <option value="linkedin">LinkedIn</option>
-                      <option value="website">Website</option>
+                      <option value="email">{t('email') || 'Email'}</option>
+                      <option value="phone">{t('phone') || 'Phone'}</option>
+                      <option value="location">{t('location') || 'Location'}</option>
+                      <option value="github">{t('github') || 'GitHub'}</option>
+                      <option value="linkedin">{t('linkedin') || 'LinkedIn'}</option>
+                      <option value="website">{t('website') || 'Website'}</option>
                     </select>
                     <div className="flex-1 flex items-center gap-2 px-4 py-2 border-2 border-neutral-200 rounded-lg bg-white">
                       {getIconForType(field.type)}

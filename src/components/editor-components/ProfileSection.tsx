@@ -1,6 +1,7 @@
 import React from 'react';
 import { Edit2, FileText } from 'lucide-react';
 import { CVData } from '../../types';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface ProfileSectionProps {
   data: CVData;
@@ -42,22 +43,12 @@ const ProfileSection: React.FC<ProfileSectionProps> = ({
       </div>
 
       {/* Professional Tips */}
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-blue-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-blue-900 font-medium mb-1">
-              {t('profileTipsTitle')}
-            </p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• {t('profileTip1')}</li>
-              <li>• {t('profileTip2')}</li>
-              <li>• {t('profileTip3')}</li>
-              <li>• {t('profileTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="profileTipsTitle" tips={[
+        t('profileTip1'),
+        t('profileTip2'),
+        t('profileTip3'),
+        t('profileTip4')
+      ]} />
 
       {/* CV Title Editor */}
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50/30 border-2 border-blue-200 rounded-xl p-5">

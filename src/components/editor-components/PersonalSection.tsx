@@ -1,6 +1,7 @@
 import React from 'react';
 import { Upload, X, User } from 'lucide-react';
 import { CVData } from '../../types';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface PersonalSectionProps {
   data: CVData;
@@ -71,22 +72,12 @@ const PersonalSection: React.FC<PersonalSectionProps> = ({
       </div>
 
       {/* Professional Photo Tips */}
-      <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-green-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-green-900 font-medium mb-1">
-              {t('photoTipsTitle')}
-            </p>
-            <ul className="text-xs text-green-800 space-y-1">
-              <li>• {t('photoTip1')}</li>
-              <li>• {t('photoTip2')}</li>
-              <li>• {t('photoTip3')}</li>
-              <li>• {t('photoTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="photoTipsTitle" tips={[
+        t('photoTip1'),
+        t('photoTip2'),
+        t('photoTip3'),
+        t('photoTip4')
+      ]} />
 
       {/* Profile Picture Upload */}
       <div className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-xl p-6">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Plus, Trash2, Edit2, Globe } from 'lucide-react';
 import { CVData, Language } from '../../types';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface LanguagesSectionProps {
   data: CVData;
@@ -80,22 +81,12 @@ const LanguagesSection: React.FC<LanguagesSectionProps> = ({
 
       {/* CV Title Editor */}
 
-      <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-blue-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-blue-900 font-medium mb-1">
-              {t('languagesTipsTitle')}
-            </p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• {t('languagesTip1')}</li>
-              <li>• {t('languagesTip2')}</li>
-              <li>• {t('languagesTip3')}</li>
-              <li>• {t('languagesTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="languagesTipsTitle" tips={[
+        t('languagesTip1'),
+        t('languagesTip2'),
+        t('languagesTip3'),
+        t('languagesTip4')
+      ]} />
 
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50/30 border-2 border-blue-200 rounded-xl p-5">
         <div className="flex items-center gap-2 mb-3">

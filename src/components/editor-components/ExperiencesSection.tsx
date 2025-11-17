@@ -9,6 +9,7 @@ import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CVData, Experience } from '../../types';
 import SortableItem from './Sortableitem';
+import TipsCard from '../TipsComponent/TipsCard';
 
 interface ExperiencesSectionProps {
   data: CVData;
@@ -158,25 +159,13 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
         </button>
       </div>
 
-      {/* ✅ CHANGED: Professional Tips - BLUE colors (matching other sections) */}
-      <div className="bg-blue-50 p-4 rounded-r-xl">
-        <div className="flex gap-3">
-          <span className="text-blue-600 text-xl">💡</span>
-          <div>
-            <p className="text-sm text-blue-900 font-medium mb-1">
-              {t('experienceTipsTitle') || t('experiencesTipsTitle')}
-            </p>
-            <ul className="text-xs text-blue-800 space-y-1">
-              <li>• {t('experienceTip1') || t('experiencesTip1')}</li>
-              <li>• {t('experienceTip2') || t('experiencesTip2')}</li>
-              <li>• {t('experienceTip3') || t('experiencesTip3')}</li>
-              <li>• {t('experienceTip4') || t('experiencesTip4')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
+      <TipsCard tipTitleKey="experiencesTipsTitle" tips={[
+        t('experiencesTip1'),
+        t('experiencesTip2'),
+        t('experiencesTip3'),
+        t('experiencesTip4')
+      ]} />
 
-      {/* ✅ FIXED: Experiences List with proper drag-drop */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
