@@ -1,17 +1,26 @@
 import React from 'react';
-import { Plus, Trash2, Edit2, Globe } from 'lucide-react';
+import { Plus, Trash2, Globe, Edit2 } from 'lucide-react';
+import { DndContext, closestCenter } from '@dnd-kit/core';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CVData, Language } from '../../types';
+import SortableItem from './Sortableitem';
 import TipsCard from '../TipsComponent/TipsCard';
 
 interface LanguagesSectionProps {
   data: CVData;
   onUpdate: (data: CVData) => void;
+  sensors: any;
+  onDragStart: (event: any) => void;
+  onDragEnd: (event: any) => void;
   t: (key: string) => string;
 }
 
 const LanguagesSection: React.FC<LanguagesSectionProps> = ({
   data,
   onUpdate,
+  sensors,
+  onDragStart,
+  onDragEnd,
   t,
 }) => {
   const addLanguage = () => {
@@ -36,7 +45,7 @@ const LanguagesSection: React.FC<LanguagesSectionProps> = ({
   const updateLanguage = (id: string, field: 'name' | 'level', value: string) => {
     onUpdate({
       ...data,
-      languages: data.languages.map(lang => 
+      languages: data.languages.map(lang =>
         lang.id === id ? { ...lang, [field]: value } : lang
       )
     });
@@ -63,6 +72,7 @@ const LanguagesSection: React.FC<LanguagesSectionProps> = ({
 
   return (
     <div className="space-y-5">
+      {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b-2 border-neutral-200">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-lg">
@@ -79,15 +89,18 @@ const LanguagesSection: React.FC<LanguagesSectionProps> = ({
         </button>
       </div>
 
+      {/* Tips Card */}
+      <TipsCard 
+        tipTitleKey="languagesTipsTitle" 
+        tips={[
+          t('languagesTip1'),
+          t('languagesTip2'),
+          t('languagesTip3'),
+          t('languagesTip4')
+        ]} 
+      />
+
       {/* CV Title Editor */}
-
-      <TipsCard tipTitleKey="languagesTipsTitle" tips={[
-        t('languagesTip1'),
-        t('languagesTip2'),
-        t('languagesTip3'),
-        t('languagesTip4')
-      ]} />
-
       <div className="bg-gradient-to-br from-blue-50 to-cyan-50/30 border-2 border-blue-200 rounded-xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <Edit2 size={18} className="text-blue-600" />
@@ -110,50 +123,61 @@ const LanguagesSection: React.FC<LanguagesSectionProps> = ({
         </p>
       </div>
 
-      {/* Languages List */}
-      <div className="space-y-4">
-        {data.languages.map((lang) => (
-          <div
-            key={lang.id}
-            className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-xl p-5"
-          >
-            <div className="flex gap-3">
-              <input
-                type="text"
-                value={lang.name}
-                onChange={(e) => updateLanguage(lang.id, 'name', e.target.value)}
-                className="flex-1 px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
-                placeholder={t('languageName') || "e.g., English, Spanish, Mandarin"}
-              />
-              <select
-                value={lang.level}
-                onChange={(e) => updateLanguage(lang.id, 'level', e.target.value)}
-                className="px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
-              >
-                {proficiencyLevels.map((level) => (
-                  <option key={level.value} value={level.value}>
-                    {level.label}
-                  </option>
-                ))}
-              </select>
-              <button
-                onClick={() => removeLanguage(lang.id)}
-                className="px-3 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200"
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
+      {/* ✅ Languages List with Drag and Drop */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      >
+        <SortableContext
+          items={data.languages.map(lang => lang.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-4">
+            {data.languages.map((lang) => (
+              <SortableItem key={lang.id} id={lang.id} isDraggingGlobal={false}>
+                <div className="bg-gradient-to-br from-white to-neutral-50 border-2 border-neutral-200 rounded-xl p-5">
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={lang.name}
+                      onChange={(e) => updateLanguage(lang.id, 'name', e.target.value)}
+                      className="flex-1 px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                      placeholder={t('languageName') || "e.g., English, Spanish, Mandarin"}
+                    />
+                    <select
+                      value={lang.level}
+                      onChange={(e) => updateLanguage(lang.id, 'level', e.target.value)}
+                      className="px-4 py-3 border-2 border-neutral-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-neutral-300 bg-white"
+                    >
+                      {proficiencyLevels.map((level) => (
+                        <option key={level.value} value={level.value}>
+                          {level.label}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() => removeLanguage(lang.id)}
+                      className="px-3 bg-red-50 hover:bg-red-500 text-red-500 hover:text-white rounded-xl transition-all duration-200"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                </div>
+              </SortableItem>
+            ))}
           </div>
-        ))}
-      </div>
+        </SortableContext>
+      </DndContext>
 
-     {data.languages.length === 0 && (
+      {data.languages.length === 0 && (
         <div className="text-center py-12 text-neutral-400">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 mb-4">
             <Globe size={32} className="text-blue-600" />
           </div>
-          <p className="font-medium mb-2">{t('noLanguages')}</p>
-          <p className="text-sm">{t('noLanguagesHint')}</p>
+          <p className="font-medium mb-2">{t('noLanguages') || 'No languages added yet'}</p>
+          <p className="text-sm">{t('noLanguagesHint') || 'Click "Add Language" to get started'}</p>
         </div>
       )}
     </div>

@@ -4,8 +4,6 @@ import {
   useSensor,
   PointerSensor,
   KeyboardSensor,
-  DndContext,
-  closestCenter,
   DragEndEvent,
   DragStartEvent
 } from '@dnd-kit/core';
@@ -36,8 +34,8 @@ export const useDragDrop = () => {
     event: DragEndEvent,
     data: CVData,
     onUpdate: (data: CVData) => void,
-    section: 'contact' | 'skills' | 'experiences' | 'technologies' | 'customSection',
-    sectionId?: string  // ✅ NEW: Optional sectionId for custom sections
+    section: 'contact' | 'skills' | 'experiences' | 'technologies' | 'certifications' | 'languages' | 'customSection',
+    sectionId?: string  // Optional sectionId for custom sections
   ) => {
     const { active, over } = event;
     setActiveId(null);
@@ -72,7 +70,34 @@ export const useDragDrop = () => {
         }
         break;
       }
-      // ✅ NEW: Handle custom section blocks
+      // ✅ FIX 1: Added technologies case
+      case 'technologies': {
+        const oldIndex = newData.technologies.findIndex((t) => t.id === active.id);
+        const newIndex = newData.technologies.findIndex((t) => t.id === over.id);
+        if (oldIndex !== -1 && newIndex !== -1) {
+          newData.technologies = arrayMove(newData.technologies, oldIndex, newIndex);
+        }
+        break;
+      }
+      // ✅ FIX 2: Added certifications case
+      case 'certifications': {
+        const oldIndex = newData.certifications.findIndex((c) => c.id === active.id);
+        const newIndex = newData.certifications.findIndex((c) => c.id === over.id);
+        if (oldIndex !== -1 && newIndex !== -1) {
+          newData.certifications = arrayMove(newData.certifications, oldIndex, newIndex);
+        }
+        break;
+      }
+      // ✅ FIX 3: Added languages case
+      case 'languages': {
+        const oldIndex = newData.languages.findIndex((l) => l.id === active.id);
+        const newIndex = newData.languages.findIndex((l) => l.id === over.id);
+        if (oldIndex !== -1 && newIndex !== -1) {
+          newData.languages = arrayMove(newData.languages, oldIndex, newIndex);
+        }
+        break;
+      }
+      // Handle custom section blocks
       case 'customSection': {
         if (sectionId) {
           const customSection = newData.customSections.find(s => s.id === sectionId);

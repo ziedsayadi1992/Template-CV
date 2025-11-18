@@ -145,7 +145,7 @@ const CVEditor: React.FC<CVEditorProps> = ({
               />
             )}
 
-            {activeSection === "technologies" && (
+             {activeSection === "technologies" && (
               <TechnologiesSection
                 data={data}
                 onUpdate={onUpdate}
@@ -173,6 +173,9 @@ const CVEditor: React.FC<CVEditorProps> = ({
               <CertificationsSection
                 data={data}
                 onUpdate={onUpdate}
+                sensors={sensors}
+                onDragStart={handleDragStart}
+                onDragEnd={(e) => handleDragEnd(e, data, onUpdate, 'certifications')}
                 t={t}
               />
             )}
@@ -181,6 +184,9 @@ const CVEditor: React.FC<CVEditorProps> = ({
               <LanguagesSection
                 data={data}
                 onUpdate={onUpdate}
+                sensors={sensors}
+                onDragStart={handleDragStart}
+                onDragEnd={(e) => handleDragEnd(e, data, onUpdate, 'languages')}
                 t={t}
               />
             )}

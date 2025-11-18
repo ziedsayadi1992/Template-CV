@@ -10,7 +10,8 @@ import {
   Code,
   Languages as LanguagesIcon,
   FileText,
-  Layers
+  Layers,
+  Star
 } from 'lucide-react';
 import type { CVData, CustomSection } from '../types';
 
@@ -180,7 +181,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           </h3>
           <div className="space-y-4">
             {data.technologies.map((category) => (
-              <div key={category.id} className="category-item">
+              <div key={category.id} className="category-item space-y-3 border-l-4 px-4 border-gray-400">
                 <div className="font-semibold text-gray-800 mb-2">{category.title}</div>
                 <div className="text-gray-700 leading-relaxed">{category.items}</div>
               </div>
@@ -200,15 +201,15 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           </h3>
           <div className="space-y-6">
             {data.experiences.map((exp) => (
-              <div key={exp.id} className="experience-item">
+              <div key={exp.id} className="experience-item space-y-3">
                 <div className="flex flex-col mb-3">
                   <h4 className="text-lg font-bold text-gray-800">{exp.jobTitle}</h4>
                   <p className="text-md font-semibold text-gray-700">{exp.company}</p>
                 </div>
                 {exp.missions && exp.missions.length > 0 && (
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 border-l-4 px-4 border-gray-400">
                     {exp.missions.map((mission, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
+                      <li key={idx} className="flex items-start gap-3 ">
                         <span className="text-gray-400 mt-1.5">•</span>
                         <span className="text-gray-700 flex-1">{mission}</span>
                       </li>
@@ -232,8 +233,9 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           </h3>
           <div className="space-y-3">
             {data.certifications.map((cert) => (
-              <div key={cert.id} className="certification-item flex items-start gap-3">
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+              <div key={cert.id} className="certification-item flex items-center gap-3 space-y-3">
+                {/* <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div> */}
+                 <Star size={15} className="text-gray-600" />
                 <div>
                   <div className="font-medium text-gray-800">{cert.name}</div>
                   <div className="text-sm text-gray-600">{cert.issuer}</div>
@@ -255,7 +257,7 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           </h3>
           <div className="space-y-2">
             {data.languages.map((language) => (
-              <div key={language.id} className="language-item flex items-center gap-3">
+              <div key={language.id} className="language-item flex items-center gap-3 space-y-3 border-l-4 px-4 border-gray-400">
                 <div>
                   <span className="font-medium text-gray-800">{language.name}</span>
                   <span className="text-gray-600 ml-2">- {language.level}</span>
@@ -275,11 +277,11 @@ const PrintableCVContent = React.forwardRef<HTMLDivElement, PrintableCVContentPr
           {section.title}
         </h3>
         {section.subtitle && (
-          <p className="text-gray-600 italic mb-3">{section.subtitle}</p>
+          <p className="font-medium text-gray-800 italic mb-3">{section.subtitle}</p>
         )}
         <div className="space-y-3">
           {section.blocks.map((block) => (
-            <div key={block.id} className="text-gray-700 leading-relaxed">
+            <div key={block.id} className="text-gray-700 leading-relaxed space-y-3 border-l-4 px-4 border-gray-400">
               {block.content}
             </div>
           ))}

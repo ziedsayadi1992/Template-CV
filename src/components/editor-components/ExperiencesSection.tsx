@@ -1,14 +1,12 @@
-// ✅ FIXED VERSION:
-// 1. Proper drag-drop implementation that actually works
-// 2. BLUE colors to match other sections (not green)
-// 3. Nested drag-drop for missions
+// ✅ FIXED VERSION with SMOOTH MISSION DRAG & DROP (No Snap Effect)
 
 import React from 'react';
-import { Plus, Trash2, ChevronDown, ChevronUp, Briefcase } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Briefcase, Edit2 } from 'lucide-react';
 import { DndContext, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { CVData, Experience } from '../../types';
 import SortableItem from './Sortableitem';
+import MissionSortableItem from './MissionSortableItem'; 
 import TipsCard from '../TipsComponent/TipsCard';
 
 interface ExperiencesSectionProps {
@@ -96,7 +94,17 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
     });
   };
 
-  // ✅ FIXED: Proper handler for experience drag-drop
+  const handleTitleUpdate = (value: string) => {
+    onUpdate({
+      ...data,
+      sectionTitles: {
+        ...data.sectionTitles,
+        experiences: value
+      }
+    });
+  };
+
+  // ✅ Handler for experience drag-drop
   const handleExperienceDragEnd = (event: any) => {
     const { active, over } = event;
     
@@ -115,7 +123,7 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
     }
   };
 
-  // ✅ FIXED: Proper handler for mission drag-drop within an experience
+  // ✅ Handler for mission drag-drop within an experience
   const handleMissionDragEnd = (event: any, expId: string) => {
     const { active, over } = event;
     
@@ -159,13 +167,41 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
         </button>
       </div>
 
-      <TipsCard tipTitleKey="experiencesTipsTitle" tips={[
-        t('experiencesTip1'),
-        t('experiencesTip2'),
-        t('experiencesTip3'),
-        t('experiencesTip4')
-      ]} />
+      {/* Tips Card */}
+      <TipsCard 
+        tipTitleKey="experienceTipsTitle" 
+        tips={[
+          t('experienceTip1'),
+          t('experienceTip2'),
+          t('experienceTip3'),
+          t('experienceTip4')
+        ]} 
+      />
 
+      {/* CV Title Editor */}
+      <div className="bg-gradient-to-br from-blue-50 to-cyan-50/30 border-2 border-blue-200 rounded-xl p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Edit2 size={18} className="text-blue-600" />
+          <label className="text-sm font-semibold text-neutral-700">
+            {t('editableSectionTitle') || 'CV Section Title'}
+          </label>
+          <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
+            {t('editableSectionTag') || 'Appears in CV'}
+          </span>
+        </div>
+        <input
+          type="text"
+          value={data.sectionTitles.experiences}
+          onChange={(e) => handleTitleUpdate(e.target.value)}
+          className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-blue-300 bg-white font-medium"
+          placeholder="e.g., Professional Experience, Work History, Career Journey"
+        />
+        <p className="text-xs text-neutral-500 mt-2">
+          {t('editableSectionTitleHint') || 'This title will appear as the section header in your CV.'}
+        </p>
+      </div>
+
+      {/* Experiences List with Drag and Drop */}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -232,7 +268,7 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
                       </div>
                     </div>
 
-                    {/* ✅ FIXED: Missions with nested drag-drop */}
+                    {/* ✅ FIXED: Missions with SMOOTH drag-drop (no snap effect) */}
                     {isExpanded && (
                       <div className="pl-4 space-y-3">
                         <div className="flex items-center justify-between mb-2">
@@ -248,7 +284,7 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
                           </button>
                         </div>
                         
-                        {/* ✅ FIXED: Separate DndContext for missions */}
+                        {/* ✅ Separate DndContext for missions with smooth animations */}
                         <DndContext
                           sensors={sensors}
                           collisionDetection={closestCenter}
@@ -260,10 +296,9 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
                             strategy={verticalListSortingStrategy}
                           >
                             {exp.missions.map((mission, idx) => (
-                              <SortableItem 
+                              <MissionSortableItem 
                                 key={`mission-${exp.id}-${idx}`} 
-                                id={`mission-${exp.id}-${idx}`} 
-                                isDraggingGlobal={false}
+                                id={`mission-${exp.id}-${idx}`}
                               >
                                 <div className="flex gap-2">
                                   <textarea
@@ -280,7 +315,7 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
                                     <Trash2 size={14} />
                                   </button>
                                 </div>
-                              </SortableItem>
+                              </MissionSortableItem>
                             ))}
                           </SortableContext>
                         </DndContext>
@@ -300,8 +335,8 @@ const ExperiencesSection: React.FC<ExperiencesSectionProps> = ({
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 mb-4">
             <Briefcase size={32} className="text-blue-600" />
           </div>
-          <p className="font-medium mb-2">{t('noExperiences')}</p>
-          <p className="text-sm">{t('noExperiencesHint')}</p>
+          <p className="font-medium mb-2">{t('noExperiences') || 'No experiences added yet'}</p>
+          <p className="text-sm">{t('noExperiencesHint') || 'Click "Add Experience" to get started'}</p>
         </div>
       )}
     </div>
